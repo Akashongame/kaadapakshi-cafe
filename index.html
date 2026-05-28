@@ -33,25 +33,24 @@
     font-family: var(--font-body);
     font-weight: 300;
     width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
   }
 
-  /* ── FIXED MORPH TIMELINE CONTAINERS ────────────────────────────── */
-  #scroll-master-wrapper {
+  /* ── REAL GSAP SCROLL-TRACK PINNING RIG ─────────────────────────── */
+  #scroll-track-rig {
     position: relative;
     width: 100%;
-    height: 600vh; /* Determines the total scroll length/duration of the entire experience */
+    height: 700vh; /* The deep invisible container track that unlocks smooth scrolling */
     background: var(--obsidian);
   }
-  #view-viewport {
+  #fixed-view-viewport {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100vh;
     overflow: hidden;
+    z-index: 10;
   }
 
-  /* Shared look for full-screen story panels stacked precisely on top of each other */
+  /* Full screen slide panels stacked squarely over one another */
   .deck-section {
     position: absolute; inset: 0; width: 100%; height: 100vh;
     display: flex; align-items: center; justify-content: center;
@@ -64,27 +63,28 @@
   #cursor-dot { position: fixed; z-index: 9999; pointer-events: none; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); transform: translate(-50%, -50%); transition: transform 0.1s; box-shadow: 0 0 12px 3px rgba(212,168,67,0.6); }
   #cursor-ring { position: fixed; z-index: 9998; pointer-events: none; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(212,168,67,0.4); transform: translate(-50%, -50%); transition: width .35s, height .35s, border-color .35s; }
   body:hover #cursor-ring { border-color: rgba(212,168,67,0.5); }
+  @media (max-width: 480px) { #cursor-dot, #cursor-ring { display: none; } }
 
   /* ── NOISE OVERLAY ─────────────────────────────────────────────── */
   #noise { position: fixed; inset: 0; z-index: 5; pointer-events: none; opacity: .03; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E"); background-size: 200px 200px; animation: noiseShift 8s steps(10) infinite; }
   @keyframes noiseShift { 0%{background-position:0 0} 10%{background-position:-5% -10%} 20%{background-position:-15% 5%} 30%{background-position:7% -25%} 40%{background-position:-5% 25%} 50%{background-position:-15% 10%} 60%{background-position:15% 0%} 70%{background-position:0 15%} 80%{background-position:3% 35%} 90%{background-position:-18% 10%} 100%{background-position:0 0} }
 
-  /* ── NAV ────────────────────────────────────────────────────────── */
+  /* ── NAV BAR ────────────────────────────────────────────────────── */
   #nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 900; height: 64px; display: flex; align-items: center; padding: 0 clamp(1.25rem, 5vw, 3rem);
-    background: rgba(5,5,4,.3); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(212,168,67,.05); opacity: 0; transform: translateY(-10px);
+    background: rgba(5,5,4,.6); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(212,168,67,.08); opacity: 0; transform: translateY(-10px);
   }
   .nav-logo { display: flex; align-items: center; gap: .65rem; text-decoration: none; margin-right: auto; }
   .nav-logo-ring { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(212,168,67,.45); display: flex; align-items: center; justify-content: center; overflow: hidden; }
   .nav-logo-ring img { width: 100%; height: 100%; object-fit: cover; }
   .nav-logo span { font-family: var(--font-display); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: rgba(212,168,67,.7); }
   .nav-links { display: flex; gap: 2.2rem; align-items: center; }
-  .nav-link { font-size: .67rem; letter-spacing: .22em; text-transform: uppercase; color: var(--stone-500); text-decoration: none; }
+  .nav-link { font-size: .67rem; letter-spacing: .22em; text-transform: uppercase; color: var(--stone-500); text-decoration: none; cursor: pointer; }
   .nav-link:hover { color: var(--gold); }
   .nav-sound { margin-left: 1.8rem; background: none; border: 1px solid var(--stone-700); border-radius: 999px; padding: .35rem .9rem; display: flex; align-items: center; gap: .4rem; font-family: var(--font-body); font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--stone-500); }
   .nav-sound svg { width: 12px; height: 12px; }
 
-  /* ── PANEL 0: LOGO CURTAIN ─────────────────────────────────────── */
+  /* ── PANEL 0: LOGO INTRO OVERLAY CURTAIN ────────────────────────── */
   #panel-curtain { opacity: 1; visibility: visible; z-index: 100; background: var(--obsidian); }
   .curtain-logo-wrap { width: clamp(140px, 22vw, 240px); height: clamp(140px, 22vw, 240px); }
   .curtain-logo-wrap img { width: 100%; height: 100%; object-fit: contain; }
@@ -93,7 +93,7 @@
   /* ── PANEL 1: HERO HOME ─────────────────────────────────────────── */
   .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 65%, rgba(180,120,20,.1) 0%, transparent 70%), var(--obsidian); }
   .hero-grid { position: absolute; inset: 0; pointer-events: none; opacity: .04; background-image: linear-gradient(rgba(212,168,67,.8) 1px, transparent 1px), linear-gradient(90deg, rgba(212,168,67,.8) 1px, transparent 1px); background-size: 80px 80px; }
-  .hero-content { text-align: center; max-width: 860px; width: 100%; transform: scale(0.9); }
+  .hero-content { text-align: center; max-width: 860px; width: 100%; }
   .hero-eyebrow { font-size: .65rem; letter-spacing: .45em; text-transform: uppercase; color: rgba(212,168,67,.55); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
   .eyebrow-line { flex: 0 0 40px; height: 1px; background: rgba(212,168,67,.35); }
   .hero-brand-heading { display: flex; justify-content: center; align-items: center; margin-bottom: 1.6rem; }
@@ -115,10 +115,11 @@
 
   /* ── PANEL 3: MENU ──────────────────────────────────────────────── */
   #panel-menu { flex-direction: column; justify-content: flex-start; padding-top: 90px; background: var(--obsidian-2); }
-  .menu-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin: 1rem 0 1.5rem; }
-  .menu-tab { padding: .45rem 1.2rem; border-radius: 999px; border: 1px solid var(--stone-800); background: none; font-family: var(--font-body); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--stone-500); }
+  .menu-header { text-align: center; margin-bottom: 1rem; }
+  .menu-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin: .5rem 0 1.5rem; }
+  .menu-tab { padding: .45rem 1.2rem; border-radius: 999px; border: 1px solid var(--stone-800); background: none; font-family: var(--font-body); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--stone-500); cursor: pointer; }
   .menu-tab.active { border-color: rgba(212,168,67,.55); color: var(--gold); background: rgba(212,168,67,.06); }
-  .menu-panel { display: none; width: 100%; max-width: 1100px; overflow-y: auto; max-height: calc(100vh - 260px); padding-bottom: 2rem; }
+  .menu-panel { display: none; width: 100%; max-width: 1100px; overflow-y: auto; max-height: calc(100vh - 270px); padding-bottom: 1.5rem; }
   .menu-panel.active { display: block; }
   .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(245px, 1fr)); gap: 1.25rem; }
   .menu-card { background: var(--obsidian-3); border-radius: 14px; border: 1px solid var(--stone-800); overflow: hidden; }
@@ -127,33 +128,55 @@
   .card-body { padding: 1rem; }
   .card-name { font-family: var(--font-display); font-size: 1.1rem; color: var(--stone-100); margin-bottom: .3rem; }
   .card-desc { font-size: .78rem; color: var(--stone-500); line-height: 1.6; }
+  .menu-future { margin-top: 1.5rem; text-align: center; width: 100%; }
+  .menu-future p { font-size: .65rem; letter-spacing: .3em; text-transform: uppercase; color: var(--stone-700); }
 
   /* ── PANEL 4: AMBIANCE ──────────────────────────────────────────── */
   .split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; max-width: 1100px; width: 100%; }
   @media (max-width: 860px) { .split-grid { grid-template-columns: 1fr; padding-top: 40px; } }
   .ambiance-img-wrap { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 4/3; border: 1px solid var(--stone-800); }
   .ambiance-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: .7; }
-  .year-badge { position: absolute; bottom: 20px; right: 20px; background: rgba(5,5,4,0.9); border: 1px solid var(--gold); border-radius: 10px; padding: .5rem .8rem; }
+  
+  /* Luxury inner badge box coordinates - completely clear of clipping boundaries */
+  .year-badge { position: absolute; bottom: 20px; right: 20px; background: rgba(5,5,4,0.92); border: 1px solid var(--gold); border-radius: 10px; padding: .5rem .8rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   .year-badge small { font-size: .55rem; letter-spacing: .15em; text-transform: uppercase; color: var(--stone-500); display: block; }
   .year-badge strong { font-family: var(--font-display); font-size: 1.5rem; color: var(--gold); display: block; line-height: 1; }
   
+  .detail-row { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--stone-800); }
+  .detail-row:last-of-type { border-bottom: none; }
+  .detail-icon { flex: 0 0 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(212,168,67,.22); display: flex; align-items: center; justify-content: center; }
+  .detail-icon svg { width: 16px; height: 16px; color: rgba(212,168,67,.6); stroke: currentColor; fill: none; }
+  .detail-label { font-size: .6rem; letter-spacing: .25em; text-transform: uppercase; color: var(--stone-500); margin-bottom: .3rem; }
+  .detail-value { color: var(--stone-100); font-size: .95rem; font-weight: 300; }
+  .detail-value small { display: block; font-size: .78rem; color: var(--stone-500); margin-top: .15rem; }
+  .detail-value .gold-time { color: var(--gold); font-family: var(--font-display); font-size: 1.25rem; }
+  .live-badge { margin-top: 1.2rem; padding: 1rem; background: var(--obsidian-3); border: 1px solid rgba(212,168,67,.15); border-radius: 12px; }
+  .live-badge p { font-size: .8rem; color: var(--stone-500); line-height: 1.6; }
+
   /* ── PANEL 5: CONTACT & QUERY ───────────────────────────────────── */
   #panel-contact { background: var(--obsidian-2); flex-direction: column; justify-content: flex-start; padding-top: 90px; }
   .contact-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 2rem; max-width: 1100px; width: 100%; }
-  @media (max-width: 860px) { .contact-grid { grid-template-columns: 1fr; max-height: calc(100vh - 160px); overflow-y: auto; } }
+  @media (max-width: 860px) { .contact-grid { grid-template-columns: 1fr; max-height: calc(100vh - 240px); overflow-y: auto; } }
   .glass-card { background: rgba(13,12,10,.8); border: 1px solid var(--stone-800); border-radius: 18px; padding: 2rem; }
   .form-group { margin-bottom: 1rem; }
   .form-group label { display: block; font-size: .6rem; letter-spacing: .28em; text-transform: uppercase; color: var(--stone-500); margin-bottom: .4rem; }
   .form-group input, .form-group textarea { width: 100%; background: rgba(8,8,7,.9); border: 1px solid var(--stone-800); border-radius: 8px; padding: .75rem 1rem; font-family: var(--font-body); font-size: .85rem; color: var(--stone-100); outline: none; appearance: none; -webkit-appearance: none; }
-  .form-submit { width: 100%; padding: .85rem; border-radius: 8px; border: 1px solid rgba(212,168,67,.4); background: rgba(212,168,67,.07); font-family: var(--font-body); font-size: .65rem; letter-spacing: .28em; text-transform: uppercase; color: rgba(212,168,67,.85); display: flex; align-items: center; justify-content: center; gap: .6rem; }
+  .form-submit { width: 100%; padding: .85rem; border-radius: 8px; border: 1px solid rgba(212,168,67,.4); background: rgba(212,168,67,.07); font-family: var(--font-body); font-size: .65rem; letter-spacing: .28em; text-transform: uppercase; color: rgba(212,168,67,.85); display: flex; align-items: center; justify-content: center; gap: .6rem; border-style: solid; }
   .social-card { background: rgba(13,12,10,.6); border: 1px solid var(--stone-800); border-radius: 14px; padding: 1.5rem; }
   .social-card-label { font-size: .6rem; letter-spacing: .3em; text-transform: uppercase; color: var(--stone-500); margin-bottom: 1rem; display: block; }
-  .social-row { display: flex; align-items: center; gap: .75rem; padding: .5rem 0; }
-  .social-handle { font-size: .85rem; color: var(--stone-300); text-decoration: none; }
+  .social-row { display: flex; align-items: center; gap: .75rem; padding: .5rem 0; font-size: .85rem; }
+  .social-handle { color: var(--stone-300); text-decoration: none; }
   .social-handle:hover { color: var(--gold); }
   .map-card { background: rgba(13,12,10,.6); border: 1px solid var(--stone-800); border-radius: 14px; overflow: hidden; }
   .map-inner { aspect-ratio: 16/10; background: var(--obsidian-3); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem; }
   .map-link { font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(212,168,67,.5); text-decoration: none; border: 1px solid rgba(212,168,67,.2); border-radius: 999px; padding: .3rem .9rem; }
+
+  /* ── BOTTOM MARQUEE SIGN-OFF STRIP ───────────────────────────────── */
+  .marquee-wrap { position: absolute; bottom: 0; left: 0; right: 0; overflow: hidden; border-top: 1px solid var(--stone-800); padding: .7rem 0; background: var(--obsidian-2); z-index: 20; }
+  .marquee-track { display: flex; gap: 2.5rem; width: max-content; animation: marqueeScroll 25s linear infinite; }
+  @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .marquee-item { display: flex; align-items: center; gap: .8rem; white-space: nowrap; font-size: .65rem; letter-spacing: .25em; text-transform: uppercase; color: var(--stone-700); }
+  .marquee-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(212,168,67,.4); flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -162,28 +185,28 @@
 <div id="cursor-dot" aria-hidden="true"></div>
 <div id="cursor-ring" aria-hidden="true"></div>
 
-<header>
-  <nav id="nav">
-    <a href="#" class="nav-logo">
-      <div class="nav-logo-ring"><img src="assets/logo.png" alt="K"></div>
-      <span>Kaadapakshi</span>
-    </a>
-    <div class="nav-links">
-      <a href="#" onclick="scrollToPanel(1); return false;" class="nav-link">Home</a>
-      <a href="#" onclick="scrollToPanel(2); return false;" class="nav-link">Story</a>
-      <a href="#" onclick="scrollToPanel(3); return false;" class="nav-link">Menu</a>
-      <a href="#" onclick="scrollToPanel(4); return false;" class="nav-link">Location</a>
-      <a href="#" onclick="scrollToPanel(5); return false;" class="nav-link">Query</a>
-    </div>
-    <button class="nav-sound" id="soundBtn">
-      <svg id="soundIcon" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.784L4.82 13.5H3a1 1 0 01-1-1v-3a1 1 0 011-1h1.82l3.563-3.284a1 1 0 011-.076z"/></svg>
-      <span id="soundLabel">Ambience</span>
-    </button>
-  </nav>
-</header>
+<div id="scroll-track-rig">
+  <div id="fixed-view-viewport">
 
-<div id="scroll-master-wrapper">
-  <div id="view-viewport">
+    <header>
+      <nav id="nav">
+        <a href="#" onclick="scrollToPanel(0); return false;" class="nav-logo">
+          <div class="nav-logo-ring"><img src="assets/logo.png" alt="K"></div>
+          <span>Kaadapakshi</span>
+        </a>
+        <div class="nav-links">
+          <a onclick="scrollToPanel(1)" class="nav-link">Home</a>
+          <a onclick="scrollToPanel(2)" class="nav-link">Story</a>
+          <a onclick="scrollToPanel(3)" class="nav-link">Menu</a>
+          <a onclick="scrollToPanel(4)" class="nav-link">Location</a>
+          <a onclick="scrollToPanel(5)" class="nav-link">Query</a>
+        </div>
+        <button class="nav-sound" id="soundBtn">
+          <svg id="soundIcon" viewBox="0 0 20 20" fill="currentColor"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.784L4.82 13.5H3a1 1 0 01-1-1v-3a1 1 0 011-1h1.82l3.563-3.284a1 1 0 011-.076z"/></svg>
+          <span id="soundLabel">Ambience</span>
+        </button>
+      </nav>
+    </header>
 
     <section class="deck-section" id="panel-curtain">
       <div class="curtain-center-panel" id="curtainPanel">
@@ -191,18 +214,17 @@
           <img src="assets/logo.png" alt="Kaadapakshi Logo">
         </div>
       </div>
-      <div class="scroll-instruction" id="scrollInstructionText">↓ Scroll Down to Enter the Desire</div>
+      <div class="scroll-instruction">↓ Scroll / Swipe Down to Explore</div>
     </section>
 
     <section class="deck-section" id="panel-hero">
       <div class="hero-bg" aria-hidden="true"></div>
       <div class="hero-grid" aria-hidden="true"></div>
-      <div class="orb orb-1" aria-hidden="true"></div>
       <div id="hero-parallax-text" aria-hidden="true">
         <span class="bg-large-word bg-word-1">MANNA</span>
         <span class="bg-large-word bg-word-2">QUAIL</span>
       </div>
-      <div class="hero-content">
+      <div class="hero-content" id="heroContentBlock">
         <div class="hero-eyebrow">
           <span class="eyebrow-line" aria-hidden="true"></span>
           Est. Kanjirappally · Kerala
@@ -217,7 +239,6 @@
         </p>
         <div class="divider-line" aria-hidden="true"></div>
       </div>
-      <div class="scroll-hint"><div class="scroll-mouse"><div class="scroll-dot"></div></div></div>
     </section>
 
     <section class="deck-section" id="panel-philosophy">
@@ -248,18 +269,10 @@
         <button class="menu-tab" data-tab="drinks">Refreshments</button>
       </div>
 
-      <div class="menu-panel active" id="tab-signature">
-        <div class="menu-grid" id="grid-signature"></div>
-      </div>
-      <div class="menu-panel" id="tab-main">
-        <div class="menu-grid" id="grid-main"></div>
-      </div>
-      <div class="menu-panel" id="tab-staples">
-        <div class="menu-grid" id="grid-staples"></div>
-      </div>
-      <div class="menu-panel" id="tab-drinks">
-        <div class="menu-grid" id="grid-drinks"></div>
-      </div>
+      <div class="menu-panel active" id="tab-signature"><div class="menu-grid" id="grid-signature"></div></div>
+      <div class="menu-panel" id="tab-main"><div class="menu-grid" id="grid-main"></div></div>
+      <div class="menu-panel" id="tab-staples"><div class="menu-grid" id="grid-staples"></div></div>
+      <div class="menu-panel" id="tab-drinks"><div class="menu-grid" id="grid-drinks"></div></div>
       <div class="menu-future"><p>✦   Signature Biriyani & Specials — Coming Soon   ✦</p></div>
     </section>
 
@@ -273,13 +286,13 @@
         </div>
         <div class="ambiance-details">
           <span class="section-eyebrow" style="text-align:left;">Find Us</span>
-          <h2 class="section-title" style="text-align:left; margin-bottom:1rem;">Ambiance & <em>Details</em></h2>
+          <h2 class="section-title" style="text-align:left; margin-bottom:1.5rem;">Ambiance & <em>Details</em></h2>
           <div class="detail-row">
-            <div class="detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg></div>
+            <div class="detail-icon"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
             <div><p class="detail-label">Location</p><div class="detail-value">Parent Branch: Kalaketty<small>Kanjirappally, Kottayam, Kerala</small></div></div>
           </div>
           <div class="detail-row">
-            <div class="detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg></div>
+            <div class="detail-icon"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg></div>
             <div><p class="detail-label">Current Hours</p><div class="detail-value"><span class="gold-time">3:00 PM – 10:00 PM</span></div></div>
           </div>
           <div class="live-badge"><p>Our kitchen operates with fresh, locally sourced produce from the Kanjirappally hills.</p></div>
@@ -302,15 +315,23 @@
             <div class="form-group"><label for="fmsg">Message</label><textarea id="fmsg" name="message" rows="3" required></textarea></div>
             <button type="submit" class="form-submit">Send Message</button>
           </form>
+          <div class="form-success" id="formSuccess" aria-live="polite">
+            <div class="form-success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <h3>Message received.</h3><p>We'll be in touch with you shortly.</p>
+          </div>
         </div>
         <div class="contact-side">
           <div class="social-card">
             <span class="social-card-label">Connect With Us</span>
-            <div class="social-row">📸 &nbsp; <a href="https://instagram.com/kaadapakshicafe" target="_blank" class="social-handle">@kaadapakshicafe</a></div>
-            <div class="social-row">💬 &nbsp; <a href="https://wa.me/919447416829" target="_blank" class="social-handle">+91 9447416829</a></div>
+            <div class="social-row">📸   <a href="https://instagram.com/kaadapakshicafe" target="_blank" class="social-handle">@kaadapakshicafe</a></div>
+            <div class="social-row">💬   <a href="https://wa.me/919447416829" target="_blank" class="social-handle">+91 9447416829</a></div>
           </div>
           <div class="map-card"><div class="map-inner"><a href="https://maps.google.com" target="_blank" class="map-link">Open in Maps</a></div></div>
         </div>
+      </div>
+      
+      <div class="marquee-wrap" aria-hidden="true">
+        <div class="marquee-track" id="marqueeTrack"></div>
       </div>
     </section>
 
@@ -318,7 +339,6 @@
 </div>
 
 <script>
-/* ── MENU ENGINE DATA ──────────────────────────────────────────────── */
 const MENU_DATA = {
   signature: [
     { name: "Kaada Varaval", desc: "Crisp-fried quail in a masala of ancient Kerala spice lore.", img: "assets/kaada-varaval.png", emoji: "🍗" },
@@ -366,97 +386,118 @@ function buildMenu() {
 function buildMarquee() {
   const items = ["Kaada Varaval","Kaada Vilayichathu","Kaadamutta Fry","Chilly Chicken","Zinger Burger","Beef Cutlet"];
   const track = document.getElementById('marqueeTrack');
-  track.innerHTML = [...items, ...items].map(i => `<span class="marquee-item"><span class="marquee-dot"></span>${i}</span>`).join('');
+  if(track) {
+    track.innerHTML = [...items, ...items].map(i => `<span class="marquee-item"><span class="marquee-dot"></span>${i}</span>`).join('');
+  }
 }
 
-/* ── MOUSE CURSOR TRACKING ────────────────────────────────────────── */
+/* ── CURSOR INTERACTION ─────────────────────────────────────────── */
 const dot = document.getElementById('cursor-dot'); const ring = document.getElementById('cursor-ring');
 let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
 document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
 function animateCursor() {
-  dot.style.left = mouseX + 'px'; dot.style.top = mouseY + 'px';
-  ringX += (mouseX - ringX) * 0.14; ringY += (mouseY - ringY) * 0.14;
-  ring.style.left = ringX + 'px'; ring.style.top = ringY + 'px';
+  if(dot && ring) {
+    dot.style.left = mouseX + 'px'; dot.style.top = mouseY + 'px';
+    ringX += (mouseX - ringX) * 0.14; ringY += (mouseY - ringY) * 0.14;
+    ring.style.left = ringX + 'px'; ring.style.top = ringY + 'px';
+  }
   requestAnimationFrame(animateCursor);
 }
 animateCursor();
 
-/* ── MENU CATEGORY TAB LINKS ──────────────────────────────────────── */
+/* ── TAB SELECTORS ──────────────────────────────────────────────── */
 document.querySelectorAll('.menu-tab').forEach(btn => {
   btn.addEventListener('click', () => {
     const tab = btn.dataset.tab;
     btn.parentElement.querySelectorAll('.menu-tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+    btn.parentElement.parentElement.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active'); document.getElementById(`tab-${tab}`).classList.add('active');
   });
 });
 
-/* ── TRUE CONTINUOUS MASTER SCROLL ZOOM MORPH ENGINE ───────────────── */
-function initMorphEngine() {
+/* ── ROCKSTAR SCROLL-BOUND ENGINE RIG ────────────────────────────── */
+function initPinningMorphEngine() {
   gsap.registerPlugin(ScrollTrigger);
 
-  // Set up the chronological timeline connected completely to your scrollbar track
-  const masterTL = gsap.timeline({
+  // Deep calculation variables to map navigation jumps safely
+  const rig = document.getElementById("scroll-track-rig");
+  
+  const masterTimeline = gsap.timeline({
     scrollTrigger: {
-      trigger: "#scroll-master-wrapper",
+      trigger: "#scroll-track-rig",
       start: "top top",
       end: "bottom bottom",
-      scrub: 1.2, /* Smoothness buffer as you wheel down */
+      scrub: 1, /* Flawless response mapping to cursor track position */
       invalidateOnRefresh: true
     }
   });
 
-  // Target all functional panels sequentially
   const p0 = "#panel-curtain", p1 = "#panel-hero", p2 = "#panel-philosophy", p3 = "#panel-menu", p4 = "#panel-ambiance", p5 = "#panel-contact";
 
-  masterTL
-    /* ── PHASE 0: LOGO CURTAIN ZOOM ── */
-    .set(p0, { autoAlpha: 1, scale: 1 })
-    .to("#scrollInstructionText", { opacity: 0, duration: 0.1 })
-    .to(p0, { scale: 35, opacity: 0, autoAlpha: 0, duration: 1, ease: "power2.in" })
+  masterTimeline
+    /* STEP 0: THE CONTROLLED INTRO ZOOM TRACK */
+    .set(p0, { autoAlpha: 1, scale: 1, opacity: 1 })
+    .to("#panel-curtain .curtain-center-panel", { scale: 35, opacity: 0, duration: 1.5, ease: "power2.in" })
+    .to(p0, { autoAlpha: 0, duration: 0.1 })
 
-    /* ── PHASE 1: HERO HOME REVEAL & ZOOM OUT ── */
-    .set(p1, { autoAlpha: 1 }, "-=0.2")
-    .fromTo("#heroContentBlock", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.5 }, "-=0.1")
-    .to("#nav", { opacity: 1, y: 0, duration: 0.3 }, "-=0.3")
-    .to(p1, { scale: 3, opacity: 0, autoAlpha: 0, duration: 1, ease: "power1.inOut" })
+    /* STEP 1: HOME PANEL MORPH REVEAL */
+    .set(p1, { autoAlpha: 1, scale: 1 }, "-=0.1")
+    .fromTo("#heroContentBlock", { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.8 }, "-=0.2")
+    .to("#nav", { opacity: 1, y: 0, duration: 0.4 }, "-=0.5")
+    .to(p1, { scale: 2.2, opacity: 0, autoAlpha: 0, duration: 1.5, ease: "power1.inOut" })
 
-    /* ── PHASE 2: PHILOSOPHY REVEAL & ZOOM OUT ── */
-    .set(p2, { autoAlpha: 1 })
-    .fromTo("#panel-philosophy .phil-headline, #panel-philosophy .verse", { opacity: 0, y: 30 }, { opacity: 1, y: 0, stagger: 0.05, duration: 0.6 })
-    .to(p2, { scale: 0.4, opacity: 0, autoAlpha: 0, duration: 1, ease: "power1.inOut" })
+    /* STEP 2: PHILOSOPHY SCRIPTURE DECK MORPH */
+    .set(p2, { autoAlpha: 1, scale: 0.5 }, "-=0.2")
+    .to(p2, { scale: 1, opacity: 1, duration: 1.2, ease: "power1.out" })
+    .fromTo("#panel-philosophy .phil-headline, #panel-philosophy .verse", { opacity: 0, y: 30 }, { opacity: 1, y: 0, stagger: 0.08, duration: 1 }, "-=0.8")
+    .to(p2, { scale: 1.8, opacity: 0, autoAlpha: 0, duration: 1.5, ease: "power2.in" })
 
-    /* ── PHASE 3: MENU CARDS REVEAL & MORPH ── */
-    .set(p3, { autoAlpha: 1 })
-    .fromTo("#panel-menu .menu-card", { opacity: 0, scale: 0.9, y: 30 }, { opacity: 1, scale: 1, y: 0, stagger: 0.04, duration: 0.7 })
-    .to(p3, { scale: 2, opacity: 0, autoAlpha: 0, duration: 1, ease: "power2.in" })
+    /* STEP 3: MENU DISPLAY EXPANSION */
+    .set(p3, { autoAlpha: 1, scale: 0.7 }, "-=0.2")
+    .to(p3, { scale: 1, opacity: 1, duration: 1.2, ease: "power1.out" })
+    .fromTo("#panel-menu .menu-card", { opacity: 0, y: 40 }, { opacity: 1, y: 0, stagger: 0.05, duration: 1 }, "-=0.6")
+    .to(p3, { scale: 0.4, opacity: 0, autoAlpha: 0, duration: 1.5, ease: "power1.inOut" })
 
-    /* ── PHASE 4: AMBIANCE ENVIRONMENT DETAIL MORPH ── */
-    .set(p4, { autoAlpha: 1 })
-    .fromTo("#panel-ambiance .split-grid", { opacity: 0, scale: 1.1 }, { opacity: 1, scale: 1, duration: 0.6 })
-    .to(p4, { scale: 0.5, opacity: 0, autoAlpha: 0, duration: 1, ease: "power1.inOut" })
+    /* STEP 4: AMBIANCE & BADGE COORDINATES DISPLAY */
+    .set(p4, { autoAlpha: 1, scale: 1.3 }, "-=0.2")
+    .to(p4, { scale: 1, opacity: 1, duration: 1.2, ease: "power2.out" })
+    .fromTo("#panel-ambiance .split-grid", { opacity: 0 }, { opacity: 1, duration: 0.8 }, "-=0.4")
+    .to(p4, { scale: 2.5, opacity: 0, autoAlpha: 0, duration: 1.5, ease: "power2.in" })
 
-    /* ── PHASE 5: CLEAN CONTACT AND QUERY CARD DISPLAY ── */
-    .set(p5, { autoAlpha: 1 })
-    .fromTo("#panel-contact .glass-card, #panel-contact .contact-side", { opacity: 0, y: 40 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.6 })
-    .to(p5, { opacity: 1, duration: 0.5 }); /* Holds final panel in view at maximum scroll bottom */
+    /* STEP 5: CONTACT SECTION LOCK DOWN */
+    .set(p5, { autoAlpha: 1, opacity: 1 })
+    .fromTo("#panel-contact .glass-card, #panel-contact .contact-side", { opacity: 0, y: 40 }, { opacity: 1, y: 0, stagger: 0.1, duration: 1 })
+    .to(p5, { opacity: 1, duration: 1 }); // Locks bottom layer cleanly at maximum bounds
 }
 
-// Navbar anchor links shortcut connector mapping parameters
+/* NAVBAR DIRECT SCROLL NAVIGATION LINK PARAMETERS */
 function scrollToPanel(panelIndex) {
-  const scrollTotalHeight = document.getElementById("scroll-master-wrapper").clientHeight;
-  const viewportUnit = scrollTotalHeight / 6; // Divides the page into 6 equal scroll tracks
+  const scrollTotalHeight = document.getElementById("scroll-track-rig").clientHeight;
+  const targetY = (scrollTotalHeight / 7) * panelIndex;
   window.scrollTo({
-    top: viewportUnit * panelIndex,
+    top: targetY,
     behavior: "smooth"
   });
 }
 
-/* ── COOKIE IGNITION LAUNCH ───────────────────────────────────────── */
+/* FORMSPREE PIPELINE OVERRIDE */
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+  const form = this;
+  const successState = document.getElementById('formSuccess');
+  setTimeout(() => {
+    gsap.to(form, { opacity: 0, y: -10, duration: 0.3, onComplete: () => {
+      form.style.display = 'none';
+      successState.classList.add('show');
+      gsap.fromTo(successState, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.4 });
+    }});
+  }, 200);
+});
+
+/* IGNITION LAUNCH */
 window.addEventListener('DOMContentLoaded', () => {
   buildMenu();
   buildMarquee();
-  initMorphEngine();
+  initPinningMorphEngine();
 });
 </script>
 </body>

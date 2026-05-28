@@ -6,7 +6,7 @@
 <title>Kaadapakshi — The Forest Quail</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin"/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,700&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,700&family=Jost:wght=200;300;400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
@@ -28,14 +28,16 @@
     --font-display: 'Cormorant Garamond', Georgia, serif;
     --font-body: 'Jost', sans-serif;
   }
-  html, body {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
     background: var(--obsidian);
     color: var(--stone-100);
     font-family: var(--font-body);
     font-weight: 300;
-    overflow: hidden; /* Disables raw scrolling for pure cinematic presentation */
-    height: 100%;
-    width: 100%;
+    overflow-x: hidden;
+    cursor: none;
   }
   
   /* ── CUSTOM CURSOR ─────────────────────────────────────────────── */
@@ -54,6 +56,13 @@
     will-change: transform;
   }
   body:hover #cursor-ring { border-color: rgba(212,168,67,0.5); }
+  a, button { cursor: none; }
+
+  /* ── SCROLLBAR ─────────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--obsidian); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+  ::selection { background: rgba(212,168,67,0.22); }
 
   /* ── NOISE OVERLAY ─────────────────────────────────────────────── */
   #noise {
@@ -137,26 +146,26 @@
     .nav-burger { display: flex; }
   }
 
-  /* ── CINEMATIC FULLSCREEN SECTION STRIP ─────────────────────────── */
-  .story-panel {
-    position: absolute; inset: 0; width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    visibility: hidden; opacity: 0; overflow: hidden; z-index: 10;
-  }
-  .story-panel.active { visibility: visible; opacity: 1; }
-  
-  /* ── SCROLL PRELOAD CURTAIN PANEL ───────────────────────────────── */
+  /* ── SECTIONS ARCHITECTURE ─────────────────────────────────────── */
+  .section-wrap { padding: clamp(4rem, 8vw, 8rem) clamp(1.25rem, 5vw, 3rem); position: relative; }
+  .section-max { max-width: 1200px; margin: 0 auto; }
+
+  /* ── PRELOAD CINEMATIC OVERLAY CURTAIN ──────────────────────────── */
   #scroll-curtain {
-    position: fixed; inset: 0; z-index: 850; background: var(--obsidian);
+    position: fixed; inset: 0; z-index: 995; background: var(--obsidian);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none;
   }
   .curtain-center-panel { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .curtain-logo-container { width: clamp(140px, 22vw, 240px); height: clamp(140px, 22vw, 240px); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
-  .curtain-logo-container img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 20px rgba(212,168,67,0.15)); }
-  .curtain-scroll-instruction { position: absolute; bottom: 3rem; font-size: .62rem; letter-spacing: .4em; text-transform: uppercase; color: var(--stone-500); animation: simplePulse 2s infinite alternate; }
-  @keyframes simplePulse { from{opacity:0.3} to{opacity:0.85} }
+  .curtain-logo-container { width: clamp(130px, 20vw, 220px); height: clamp(130px, 20vw, 220px); display: flex; align-items: center; justify-content: center; }
+  .curtain-logo-container img { width: 100%; height: 100%; object-fit: contain; }
 
-  /* ── PANEL 1: HERO ──────────────────────────────────────────────── */
+  /* ── HERO ───────────────────────────────────────────────────────── */
+  #hero {
+    position: relative; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
   .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 65%, rgba(180,120,20,.1) 0%, transparent 70%), radial-gradient(ellipse 40% 30% at 20% 20%, rgba(212,168,67,.04) 0%, transparent 60%), var(--obsidian); }
   .hero-grid { position: absolute; inset: 0; pointer-events: none; opacity: .04; background-image: linear-gradient(rgba(212,168,67,.8) 1px, transparent 1px), linear-gradient(90deg, rgba(212,168,67,.8) 1px, transparent 1px); background-size: 80px 80px; }
   .hero-vignette { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, var(--obsidian) 0%, transparent 18%, transparent 75%, var(--obsidian) 100%), radial-gradient(ellipse at center, transparent 30%, rgba(5,5,4,.7) 100%); }
@@ -167,68 +176,74 @@
   @keyframes orbFloat { from { transform: translateY(0) scale(1); } to { transform: translateY(-40px) scale(1.08); } }
   
   #hero-parallax-text { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; height: 100%; pointer-events: none; z-index: 0; }
-  .bg-large-word { position: absolute; font-family: var(--font-display); font-size: clamp(8rem, 22vw, 18rem); font-weight: 700; letter-spacing: -.02em; opacity: .04; color: transparent; -webkit-text-stroke: 1px rgba(212,168,67,.06); white-space: nowrap; }
-  .bg-word-1 { top: 5%; left: -5%; }
-  .bg-word-2 { bottom: 8%; right: -5%; }
+  .bg-large-word { position: absolute; font-family: var(--font-display); font-size: clamp(6rem, 18vw, 15rem); font-weight: 700; letter-spacing: -.02em; opacity: 0; color: transparent; -webkit-text-stroke: 1px rgba(212,168,67,.05); white-space: nowrap; will-change: transform, opacity; }
+  .bg-word-1 { top: 8%; left: -2%; }
+  .bg-word-2 { bottom: 12%; right: -2%; }
   
-  .hero-content { position: relative; z-index: 2; text-align: center; padding: 0 1.5rem; max-width: 860px; width: 100%; }
+  /* Safe initial hidden values to stop raw bleed-through on load */
+  .hero-content { position: relative; z-index: 2; text-align: center; padding: 0 1.5rem; max-width: 860px; width: 100%; opacity: 0; transform: scale(0.96); visibility: hidden; }
   .hero-eyebrow { font-size: .65rem; letter-spacing: .45em; text-transform: uppercase; color: rgba(212,168,67,.55); margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
   .eyebrow-line { flex: 0 0 40px; height: 1px; background: rgba(212,168,67,.35); }
   .hero-brand-heading { display: flex; justify-content: center; align-items: center; margin: 0 auto 1.6rem; min-height: 120px; }
-  .hero-brand-heading img { max-width: clamp(280px, 50vw, 520px); height: auto; object-fit: contain; filter: drop-shadow(0 0 30px rgba(212,168,67,0.25)); }
+  .hero-brand-heading img { max-width: clamp(260px, 45vw, 500px); height: auto; object-fit: contain; filter: drop-shadow(0 0 30px rgba(212,168,67,0.25)); }
   .hero-sub-line { font-family: var(--font-display); font-style: italic; font-size: clamp(.95rem, 2.5vw, 1.4rem); font-weight: 300; color: var(--stone-500); line-height: 1.8; }
   .hero-sub-line em { color: rgba(212,168,67,.75); font-style: italic; }
   .divider-line { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); margin: 2rem auto; }
   .hero-cta { display: inline-flex; align-items: center; gap: .8rem; padding: .85rem 2.2rem; border-radius: 999px; border: 1px solid rgba(212,168,67,.4); background: none; font-family: var(--font-body); font-size: .68rem; letter-spacing: .28em; text-transform: uppercase; color: rgba(212,168,67,.85); transition: border-color .4s, box-shadow .4s; }
   .hero-cta:hover { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 24px rgba(212,168,67,.2); }
   
-  /* ── PANEL 2: PHILOSOPHY ────────────────────────────────────────── */
-  #philosophy { max-width: 900px; margin: 0 auto; text-align: center; flex-direction: column; }
-  .phil-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: var(--font-display); font-size: clamp(5rem,18vw,14rem); font-weight: 700; color: transparent; -webkit-text-stroke: 1px rgba(212,168,67,.04); white-space: nowrap; pointer-events: none; opacity: .4; }
-  .section-eyebrow { font-size: .63rem; letter-spacing: .42em; text-transform: uppercase; color: rgba(212,168,67,.5); margin-bottom: 1.6rem; display: block; }
-  .phil-headline { font-family: var(--font-display); font-size: clamp(2.2rem,5vw,4rem); font-weight: 400; line-height: 1.15; color: var(--stone-100); }
-  .phil-headline em { color: var(--gold); font-style: italic; }
-  .verse-block { margin: 2.5rem 0 0; display: flex; flex-direction: column; }
-  .verse { font-family: var(--font-display); font-style: italic; font-size: clamp(1rem, 2.2vw, 1.35rem); font-weight: 300; line-height: 2; color: var(--stone-500); }
-  .verse.gold { color: rgba(212,168,67,.8); font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
-  .phil-divider { width: 1px; height: 40px; background: linear-gradient(to bottom, transparent, rgba(212,168,67,.3), transparent); margin: 0 auto; }
-  .phil-body { margin-top: 2.5rem; font-size: clamp(.88rem, 1.8vw, 1rem); color: var(--stone-500); line-height: 2; font-weight: 300; max-width: 640px; }
+  .scroll-hint { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .6rem; z-index: 2; opacity: 0; }
+  .scroll-mouse { width: 22px; height: 36px; border-radius: 11px; border: 1px solid var(--stone-700); display: flex; align-items: flex-start; justify-content: center; padding-top: 6px; }
+  .scroll-dot { width: 2px; height: 8px; border-radius: 1px; background: rgba(212,168,67,.5); animation: scrollBounce 1.8s ease-in-out infinite; }
+  @keyframes scrollBounce { 0%, 100% { transform: translateY(0); opacity: .5; } 50% { transform: translateY(8px); opacity: 1; } }
+  .scroll-label { font-size: .58rem; letter-spacing: .35em; text-transform: uppercase; color: var(--stone-700); }
 
-  /* ── PANEL 3: MENU ──────────────────────────────────────────────── */
-  #menu { background: var(--obsidian-2); flex-direction: column; padding-top: 80px; justify-content: flex-start; }
-  .menu-header { text-align: center; margin-bottom: 1.5rem; }
-  .section-title { font-family: var(--font-display); font-size: clamp(2rem,4.5vw,3.5rem); font-weight: 400; color: var(--stone-100); line-height: 1.1; }
+  /* ── PHILOSOPHY ────────────────────────────────────────────────── */
+  #philosophy { padding: clamp(5rem, 12vw, 10rem) 1.5rem; max-width: 900px; margin: 0 auto; text-align: center; }
+  .phil-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: var(--font-display); font-size: clamp(5rem,18vw,14rem); font-weight: 700; color: transparent; -webkit-text-stroke: 1px rgba(212,168,67,.03); white-space: nowrap; pointer-events: none; will-change: transform, opacity; }
+  .section-eyebrow { font-size: .63rem; letter-spacing: .42em; text-transform: uppercase; color: rgba(212,168,67,.5); margin-bottom: 1.6rem; display: block; opacity: 0; transform: translateY(15px); }
+  .phil-headline { font-family: var(--font-display); font-size: clamp(2.2rem,5vw,4rem); font-weight: 400; line-height: 1.15; color: var(--stone-100); opacity: 0; transform: translateY(20px); }
+  .phil-headline em { color: var(--gold); font-style: italic; }
+  .verse-block { margin: 3rem 0 0; display: flex; flex-direction: column; }
+  .verse { font-family: var(--font-display); font-style: italic; font-size: clamp(1rem, 2.2vw, 1.35rem); font-weight: 300; line-height: 2; color: var(--stone-500); opacity: 0; transform: translateY(15px); }
+  .verse.gold { color: rgba(212,168,67,.8); font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
+  .phil-divider { width: 1px; height: 45px; background: linear-gradient(to bottom, transparent, rgba(212,168,67,.25), transparent); margin: 0 auto; opacity: 0; }
+  .phil-body { margin-top: 3rem; font-size: clamp(.88rem, 1.8vw, 1rem); color: var(--stone-500); line-height: 2; font-weight: 300; max-width: 640px; margin-left: auto; margin-right: auto; opacity: 0; transform: translateY(15px); }
+
+  /* ── MENU ───────────────────────────────────────────────────────── */
+  #menu { background: var(--obsidian-2); }
+  .menu-header { text-align: center; margin-bottom: 2.5rem; }
+  .section-title { font-family: var(--font-display); font-size: clamp(2rem,4.5vw,3.5rem); font-weight: 400; color: var(--stone-100); line-height: 1.1; opacity: 0; transform: translateY(20px); }
   .section-title em { color: var(--gold); font-style: italic; }
-  .menu-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin: 1rem 0 2rem; }
+  .menu-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin: 1.5rem 0 2.5rem; }
   .menu-tab { padding: .45rem 1.2rem; border-radius: 999px; border: 1px solid var(--stone-800); background: none; font-family: var(--font-body); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--stone-500); transition: border-color .3s, color .3s, background .3s; }
   .menu-tab.active, .menu-tab:hover { border-color: rgba(212,168,67,.55); color: var(--gold); background: rgba(212,168,67,.06); }
-  .menu-panel { display: none; width: 100%; max-width: 1200px; padding: 0 2rem; overflow-y: auto; max-height: calc(100vh - 320px); }
+  .menu-panel { display: none; }
   .menu-panel.active { display: block; }
-  .menu-category-title { text-align: center; margin-bottom: 1.5rem; }
+  .menu-category-title { text-align: center; margin-bottom: 2rem; }
   .mct-main { font-family: var(--font-display); font-size: clamp(1.4rem,3vw,2.2rem); font-weight: 400; color: var(--stone-100); }
   .mct-sub { font-size: .6rem; letter-spacing: .35em; text-transform: uppercase; color: var(--stone-500); margin-top: .3rem; display: block; }
-  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; padding-bottom: 2rem; }
-  .menu-card { background: var(--obsidian-3); border-radius: 14px; border: 1px solid var(--stone-800); overflow: hidden; position: relative; transition: border-color .45s, transform .45s; }
-  .menu-card:hover { border-color: rgba(212,168,67,.3); transform: translateY(-4px); }
-  .card-img { height: 160px; overflow: hidden; background: #0e0c09; position: relative; }
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+  .menu-card { background: var(--obsidian-3); border-radius: 14px; border: 1px solid var(--stone-800); overflow: hidden; position: relative; transition: border-color .45s, transform .45s; opacity: 0; transform: translateY(20px); }
+  .menu-card:hover { border-color: rgba(212,168,67,.3); transform: translateY(-5px); }
+  .card-img { height: 170px; overflow: hidden; background: #0e0c09; position: relative; }
   .card-img img { width: 100%; height: 100%; object-fit: cover; opacity: .75; transition: opacity .5s, transform .55s cubic-bezier(.22,1,.36,1); display: block; }
-  .menu-card:hover .card-img img { opacity: .95; transform: scale(1.07); }
+  .menu-card:hover .card-img img { opacity: .95; transform: scale(1.06); }
   .card-img-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem; background: linear-gradient(135deg,#0d0b08,#181410); }
   .card-img-placeholder span { font-size: 2rem; opacity: .4; }
   .card-img-placeholder p { font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--stone-700); }
   .card-img-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: linear-gradient(to top, var(--obsidian-3), transparent); pointer-events: none; }
-  .card-body { padding: 1.2rem; }
+  .card-body { padding: 1.2rem 1.4rem; }
   .card-name { font-family: var(--font-display); font-size: 1.15rem; color: var(--stone-100); margin-bottom: .4rem; }
   .menu-card:hover .card-name { color: rgba(212,168,67,.9); }
   .card-desc { font-size: .8rem; color: var(--stone-500); line-height: 1.7; font-weight: 300; }
-  .menu-future { margin-top: 1rem; text-align: center; width: 100%; padding-bottom: 2rem; }
+  .menu-future { margin-top: 2.5rem; border: 1px dashed rgba(212,168,67,.12); border-radius: 12px; padding: 2rem; text-align: center; }
   .menu-future p { font-size: .65rem; letter-spacing: .3em; text-transform: uppercase; color: var(--stone-700); }
 
-  /* ── PANEL 4: AMBIANCE ──────────────────────────────────────────── */
-  #ambiance { padding: 0 2rem; }
-  .split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; max-width: 1200px; width: 100%; }
-  @media (max-width: 860px) { #ambiance .split-grid { grid-template-columns: 1fr; padding-top: 60px; } }
-  .ambiance-img-wrap { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 4/3; background: var(--obsidian-3); border: 1px solid var(--stone-800); }
+  /* ── AMBIANCE ───────────────────────────────────────────────────── */
+  .split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
+  @media (max-width: 860px) { .split-grid { grid-template-columns: 1fr; } }
+  .ambiance-img-wrap { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 4/3; background: var(--obsidian-3); border: 1px solid var(--stone-800); opacity: 0; transform: translateX(-30px); }
   .ambiance-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: .7; display: block; }
   .ambiance-img-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; background: linear-gradient(135deg,#0d0b08,#1a1610); }
   .ambiance-img-placeholder .big-icon { font-size: 3rem; opacity: .25; }
@@ -236,12 +251,13 @@
   .corner-tl { position: absolute; top: 14px; left: 14px; width: 20px; height: 20px; border-top: 1px solid rgba(212,168,67,.35); border-left: 1px solid rgba(212,168,67,.35); }
   .corner-br { position: absolute; bottom: 14px; right: 14px; width: 20px; height: 20px; border-bottom: 1px solid rgba(212,168,67,.35); border-right: 1px solid rgba(212,168,67,.35); }
   
-  /* ESTD 2025 Luxury inner badge variant */
-  .year-badge { position: absolute; bottom: 25px; right: 25px; background: rgba(5,5,4,0.85); backdrop-filter: blur(8px); border: 1px solid var(--gold); border-radius: 8px; padding: .5rem .8rem; z-index: 5; }
+  /* Fixed inner badge container - keeps Est. 2025 fully within constraints */
+  .year-badge { position: absolute; bottom: 16px; right: 16px; background: rgba(5,5,4,0.9); border: 1px solid var(--gold); border-radius: 10px; padding: .5rem .8rem; z-index: 10; }
   .year-badge small { font-size: .55rem; letter-spacing: .15em; text-transform: uppercase; color: var(--stone-500); display: block; }
-  .year-badge strong { font-family: var(--font-display); font-size: 1.5rem; color: var(--gold); display: block; line-height: 1; }
+  .year-badge strong { font-family: var(--font-display); font-size: 1.6rem; color: var(--gold); display: block; line-height: 1; }
   
-  .detail-row { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--stone-800); }
+  .ambiance-details { opacity: 0; transform: translateX(30px); }
+  .detail-row { display: flex; align-items: flex-start; gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--stone-800); }
   .detail-row:last-of-type { border-bottom: none; }
   .detail-icon { flex: 0 0 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(212,168,67,.22); display: flex; align-items: center; justify-content: center; }
   .detail-icon svg { width: 16px; height: 16px; color: rgba(212,168,67,.6); stroke: currentColor; }
@@ -249,18 +265,19 @@
   .detail-value { color: var(--stone-100); font-size: .95rem; font-weight: 300; }
   .detail-value small { display: block; font-size: .78rem; color: var(--stone-500); margin-top: .15rem; }
   .detail-value .gold-time { color: var(--gold); font-family: var(--font-display); font-size: 1.25rem; }
-  .live-badge { margin-top: 1.2rem; padding: 1rem; background: var(--obsidian-3); border: 1px solid rgba(212,168,67,.15); border-radius: 12px; }
-  .live-badge-header { display: flex; align-items: center; gap: .5rem; margin-bottom: .4rem; }
+  .live-badge { margin-top: 1.5rem; padding: 1.1rem 1.3rem; background: var(--obsidian-3); border: 1px solid rgba(212,168,67,.15); border-radius: 12px; }
+  .live-badge-header { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
   .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 8px rgba(212,168,67,.7); animation: pulse 2s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{box-shadow:0 0 6px rgba(212,168,67,.6)} 50%{box-shadow:0 0 14px rgba(212,168,67,.9)} }
   .live-badge-label { font-size: .6rem; letter-spacing: .3em; text-transform: uppercase; color: rgba(212,168,67,.55); }
-  .live-badge p { font-size: .8rem; color: var(--stone-500); line-height: 1.6; }
+  .live-badge p { font-size: .82rem; color: var(--stone-500); line-height: 1.6s; }
 
-  /* ── PANEL 5: CONTACT ──────────────────────────────────────────── */
-  #contact { background: var(--obsidian-2); flex-direction: column; justify-content: flex-start; padding-top: 80px; }
-  .contact-grid { display: grid; grid-template-columns: 3fr 2fr; gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; max-width: 1200px; width: 100%; padding: 0 2rem; }
-  @media (max-width: 860px) { .contact-grid { grid-template-columns: 1fr; overflow-y: auto; max-height: calc(100vh - 180px); } }
-  .glass-card { background: rgba(13,12,10,.8); backdrop-filter: blur(20px); border: 1px solid var(--stone-800); border-radius: 18px; padding: 2rem; position: relative; overflow: hidden; box-shadow: 0 0 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.03); }
+  /* ── CONTACT ────────────────────────────────────────────────────── */
+  #contact { background: var(--obsidian-2); }
+  .contact-grid { display: grid; grid-template-columns: 3fr 2fr; gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
+  @media (max-width: 860px) { .contact-grid { grid-template-columns: 1fr; } }
+  .glass-card { background: rgba(13,12,10,.8); backdrop-filter: blur(20px); border: 1px solid var(--stone-800); border-radius: 18px; padding: clamp(1.5rem, 4vw, 2.5rem); position: relative; overflow: hidden; box-shadow: 0 0 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.03); opacity: 0; transform: translateY(20px); }
+  .glass-card::before { content: ''; position: absolute; top: 0; right: 0; width: 200px; height: 200px; background: radial-gradient(circle, rgba(212,168,67,.04) 0%, transparent 70%); pointer-events: none; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
   .form-group { margin-bottom: 1.2rem; }
@@ -268,11 +285,11 @@
   .form-group input, .form-group textarea { width: 100%; background: rgba(8,8,7,.9); border: 1px solid var(--stone-800); border-radius: 8px; padding: .8rem 1rem; font-family: var(--font-body); font-size: .85rem; font-weight: 300; color: var(--stone-100); transition: border-color .3s; outline: none; resize: none; appearance: none; -webkit-appearance: none; }
   .form-group input::placeholder, .form-group textarea::placeholder { color: var(--stone-700); }
   .form-group input:focus, .form-group textarea:focus { border-color: rgba(212,168,67,.45); }
-  .form-submit { width: 100%; padding: .9rem; border-radius: 8px; border: 1px solid rgba(212,168,67,.4); background: rgba(212,168,67,.07); font-family: var(--font-body); font-size: .65rem; letter-spacing: .28em; text-transform: uppercase; color: rgba(212,168,67,.85); display: flex; align-items: center; justify-content: center; gap: .6rem; transition: background .3s, border-color .3s; appearance: none; -webkit-appearance: none; }
+  .form-submit { width: 100%; padding: .9rem; border-radius: 8px; border: 1px solid rgba(212,168,67,.4); background: rgba(212,168,67,.07); font-family: var(--font-body); font-size: .65rem; letter-spacing: .28em; text-transform: uppercase; color: rgba(212,168,67,.85); display: flex; align-items: center; justify-content: center; gap: .6rem; transition: background .3s, border-color .3s; }
   .form-submit:hover { background: rgba(212,168,67,.14); border-color: rgba(212,168,67,.65); color: var(--gold); }
   .form-submit svg { width: 14px; height: 14px; }
   
-  .form-success { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 220px; gap: 1rem; }
+  .form-success { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 240px; gap: 1rem; }
   .form-success.show { display: flex; }
   .form-success-icon { width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgba(212,168,67,.4); display: flex; align-items: center; justify-content: center; }
   .form-success-icon svg { width: 20px; height: 20px; color: var(--gold); stroke: currentColor; }
@@ -280,15 +297,15 @@
   .form-success p { font-size: .82rem; color: var(--stone-500); }
   
   .contact-side { display: flex; flex-direction: column; gap: 1.2rem; }
-  .social-card { background: rgba(13,12,10,.6); backdrop-filter: blur(20px); border: 1px solid var(--stone-800); border-radius: 14px; padding: 1.5rem; }
+  .social-card { background: rgba(13,12,10,.6); backdrop-filter: blur(20px); border: 1px solid var(--stone-800); border-radius: 14px; padding: 1.5rem; opacity: 0; transform: translateY(20px); }
   .social-card-label { font-size: .6rem; letter-spacing: .3em; text-transform: uppercase; color: var(--stone-500); margin-bottom: 1.2rem; display: block; }
   .social-row { display: flex; align-items: center; gap: .75rem; padding: .6rem 0; }
   .social-icon { font-size: 1rem; opacity: .55; }
   .social-name { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--stone-500); }
-  .social-handle { font-size: .85rem; color: var(--stone-300); transition: color .3s; text-decoration: none; }
+  .social-handle { font-size: .85rem; color: var(--stone-300); text-decoration: none; transition: color .3s; }
   .social-row:hover .social-handle { color: var(--gold); }
   
-  .map-card { background: rgba(13,12,10,.6); border: 1px solid var(--stone-800); border-radius: 14px; overflow: hidden; }
+  .map-card { background: rgba(13,12,10,.6); border: 1px solid var(--stone-800); border-radius: 14px; overflow: hidden; opacity: 0; transform: translateY(20px); }
   .map-inner { aspect-ratio: 16/9; background: var(--obsidian-3); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .8rem; position: relative; }
   .map-grid { position: absolute; inset: 0; opacity: .07; background-image: linear-gradient(rgba(212,168,67,.8) 1px, transparent 1px), linear-gradient(90deg, rgba(212,168,67,.8) 1px, transparent 1px); background-size: 28px 28px; }
   .map-pin { position: relative; z-index: 1; width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(212,168,67,.35); display: flex; align-items: center; justify-content: center; }
@@ -297,52 +314,49 @@
   .map-link { position: relative; z-index: 1; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(212,168,67,.5); text-decoration: none; border: 1px solid rgba(212,168,67,.2); border-radius: 999px; padding: .3rem .9rem; transition: color .3s, border-color .3s; }
   .map-link:hover { color: var(--gold); border-color: rgba(212,168,67,.5); }
 
-  /* ── MARQUEE STIP ───────────────────────────────────────────────── */
-  .marquee-wrap { position: absolute; bottom: 0; left: 0; right: 0; overflow: hidden; border-top: 1px solid var(--stone-800); border-bottom: 1px solid var(--stone-800); padding: .7rem 0; background: var(--obsidian-2); z-index: 20; }
+  /* ── FOOTER ──────────────────────────────────────────────────────── */
+  footer { border-top: 1px solid var(--stone-800); padding: 4rem clamp(1.5rem,5vw,3rem); text-align: center; }
+  footer .f-brand { font-family: var(--font-display); font-size: 1.6rem; color: rgba(212,168,67,.5); margin-bottom: .4rem; }
+  footer .f-loc { font-size: .62rem; letter-spacing: .28em; text-transform: uppercase; color: var(--stone-700); }
+  footer .f-div { width: 40px; height: 1px; background: linear-gradient(90deg, transparent, var(--stone-700), transparent); margin: 1.4rem auto; }
+  footer .f-copy { font-size: .7rem; color: var(--stone-700); }
+
+  /* ── MARQUEE ─────────────────────────────────────────────────────── */
+  .marquee-wrap { overflow: hidden; border-top: 1px solid var(--stone-800); border-bottom: 1px solid var(--stone-800); padding: .9rem 0; background: var(--obsidian-2); }
   .marquee-track { display: flex; gap: 2.5rem; width: max-content; animation: marqueeScroll 30s linear infinite; }
   @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   .marquee-item { display: flex; align-items: center; gap: .8rem; white-space: nowrap; font-size: .65rem; letter-spacing: .25em; text-transform: uppercase; color: var(--stone-700); }
   .marquee-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(212,168,67,.4); flex-shrink: 0; }
-
-  /* ── INDICATOR CIRCLES ──────────────────────────────────────────── */
-  .slide-indicators {
-    position: fixed; right: 2rem; top: 50%; transform: translateY(-50%);
-    display: flex; flex-direction: column; gap: 1rem; z-index: 950;
-  }
-  .ind-dot {
-    width: 6px; height: 6px; border-radius: 50%; background: rgba(212,168,67,0.2);
-    transition: background 0.4s, transform 0.4s;
-  }
-  .ind-dot.active {
-    background: var(--gold); transform: scale(1.6);
-    box-shadow: 0 0 10px var(--gold);
-  }
-  @media (max-width: 768px) { .slide-indicators { display: none; } }
 </style>
 </head>
 <body>
 
-<!-- Noise texture -->
 <div id="noise" aria-hidden="true"></div>
 
-<!-- Custom cursor -->
 <div id="cursor-dot"  aria-hidden="true"></div>
 <div id="cursor-ring" aria-hidden="true"></div>
 
-<!-- ══ NAVIGATION ══════════════════════════════════════════════════════ -->
+<div id="scroll-curtain">
+  <div class="curtain-center-panel" id="curtainPanel">
+    <div class="curtain-logo-container">
+      <img src="assets/logo.png" alt="Kaadapakshi Logo">
+    </div>
+  </div>
+</div>
+
 <header>
   <nav id="nav" aria-label="Main navigation">
-    <a href="#" onclick="jumpToPanel(0); return false;" class="nav-logo" aria-label="Kaadapakshi Home">
+    <a href="#hero" class="nav-logo" aria-label="Kaadapakshi Home">
       <div class="nav-logo-ring" aria-hidden="true">
         <img src="assets/logo.png" alt="K" onerror="this.style.display='none'">
       </div>
       <span>Kaadapakshi</span>
     </a>
     <div class="nav-links">
-      <a href="#" onclick="jumpToPanel(1); return false;" class="nav-link">Story</a>
-      <a href="#" onclick="jumpToPanel(2); return false;" class="nav-link">Menu</a>
-      <a href="#" onclick="jumpToPanel(3); return false;" class="nav-link">Location</a>
-      <a href="#" onclick="jumpToPanel(4); return false;" class="nav-link">Query</a>
+      <a href="#philosophy" class="nav-link">Story</a>
+      <a href="#menu"       class="nav-link">Menu</a>
+      <a href="#ambiance"   class="nav-link">Location</a>
+      <a href="#contact"    class="nav-link">Query</a>
     </div>
     <button class="nav-sound" id="soundBtn" aria-label="Toggle ambient sound">
       <svg id="soundIcon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -357,95 +371,75 @@
     </button>
   </nav>
   <div id="mobile-menu" aria-hidden="true">
-    <a href="#" onclick="jumpToPanel(1); return false;" class="mob-link">Story</a>
-    <a href="#" onclick="jumpToPanel(2); return false;" class="mob-link">Menu</a>
-    <a href="#" onclick="jumpToPanel(3); return false;" class="mob-link">Location</a>
-    <a href="#" onclick="jumpToPanel(4); return false;" class="mob-link">Query</a>
+    <a href="#philosophy" class="mob-link">Story</a>
+    <a href="#menu"       class="mob-link">Menu</a>
+    <a href="#ambiance"   class="mob-link">Location</a>
+    <a href="#contact"    class="mob-link">Query</a>
   </div>
 </header>
 
-<!-- Right Side Indicators -->
-<div class="slide-indicators" id="slideIndicators">
-  <div class="ind-dot active"></div>
-  <div class="ind-dot"></div>
-  <div class="ind-dot"></div>
-  <div class="ind-dot"></div>
-  <div class="ind-dot"></div>
-</div>
-
-<!-- ══ FIXED INITIAL ZOOM LAYER ════════════════════════════════════════ -->
-<div id="scroll-curtain">
-  <div class="curtain-center-panel" id="curtainPanel">
-    <div class="curtain-logo-container">
-      <img src="assets/logo.png" id="curtainLogoImg" alt="Kaadapakshi Logo">
-    </div>
+<section id="hero" aria-label="Hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-vignette" aria-hidden="true"></div>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+  <div class="orb orb-3" aria-hidden="true"></div>
+  <div id="hero-parallax-text" aria-hidden="true">
+    <span class="bg-large-word bg-word-1">MANNA</span>
+    <span class="bg-large-word bg-word-2">QUAIL</span>
   </div>
-  <div class="curtain-scroll-instruction" id="scrollHintText">↓ Swipe / Scroll to Enter the Desire</div>
+  <div class="hero-content" id="heroContentBlock">
+    <div class="hero-eyebrow">
+      <span class="eyebrow-line" aria-hidden="true"></span>
+      Est. Kanjirappally · Kerala
+      <span class="eyebrow-line" aria-hidden="true"></span>
+    </div>
+    <h1 class="hero-brand-heading">
+      <img src="assets/kaadapakshi-lettering.png" alt="Kaadapakshi">
+    </h1>
+    <p class="hero-sub-line">
+      Manna was for survival. The Quail was a wish.<br>
+      <em>Experience the luxury of your deepest desires.</em>
+    </p>
+    <div class="divider-line" aria-hidden="true"></div>
+    <button class="hero-cta" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">
+      Explore the Taste
+    </button>
+  </div>
+  <div class="scroll-hint" id="siteScrollHint" aria-hidden="true">
+    <div class="scroll-mouse"><div class="scroll-dot"></div></div>
+    <span class="scroll-label">Scroll</span>
+  </div>
+</section>
+
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="marquee-track" id="marqueeTrack"></div>
 </div>
 
-<!-- ══ MAIN INTERACTIVE SLIDE DECK PANEL SYSTEM ═════════════════════════ -->
-<div style="position: relative; width: 100%; height: 100vh;">
+<section id="philosophy" class="section-wrap" aria-labelledby="phil-headline">
+  <div class="phil-bg-text" aria-hidden="true">KAADA</div>
+  <span class="section-eyebrow">Our Philosophy</span>
+  <h2 class="phil-headline" id="phil-headline">
+    The Legend of the<br><em>Forest Quail</em>
+  </h2>
+  <div class="verse-block">
+    <p class="verse">"In the wilderness, God sent Manna — the bare minimum for survival."</p>
+    <div class="phil-divider" aria-hidden="true"></div>
+    <p class="verse">"But the people desired more. They craved the Quail."</p>
+    <div class="phil-divider" aria-hidden="true"></div>
+    <p class="verse gold">"The Quail was not sustenance. It was a wish. A luxury. A desire fulfilled."</p>
+  </div>
+  <p class="phil-body">
+    Born from the mist-covered hills of Kanjirappally, Kaadapakshi honours the quail — Kerala's most storied forest bird. We channel its wild, untamed essence into cuisine that transcends the ordinary. Every dish is a covenant with flavour. Every visit, an indulgence deserved.
+  </p>
+</section>
 
-  <!-- PANEL 0: HERO -->
-  <section class="story-panel story-panel-block active" aria-label="Hero">
-    <div class="hero-bg" aria-hidden="true"></div>
-    <div class="hero-grid" aria-hidden="true"></div>
-    <div class="hero-vignette" aria-hidden="true"></div>
-    <div class="orb orb-1" aria-hidden="true"></div>
-    <div class="orb orb-2" aria-hidden="true"></div>
-    <div class="orb orb-3" aria-hidden="true"></div>
-    <div id="hero-parallax-text" aria-hidden="true">
-      <span class="bg-large-word bg-word-1">MANNA</span>
-      <span class="bg-large-word bg-word-2">QUAIL</span>
-    </div>
-    <div class="hero-content" id="heroContentBlock">
-      <div class="hero-eyebrow">
-        <span class="eyebrow-line" aria-hidden="true"></span>
-        Est. Kanjirappally · Kerala
-        <span class="eyebrow-line" aria-hidden="true"></span>
-      </div>
-      <h1 class="hero-brand-heading">
-        <img src="assets/kaadapakshi-lettering.png" alt="Kaadapakshi">
-      </h1>
-      <p class="hero-sub-line">
-        Manna was for survival. The Quail was a wish.<br>
-        <em>Experience the luxury of your deepest desires.</em>
-      </p>
-      <div class="divider-line" aria-hidden="true"></div>
-      <button class="hero-cta" onclick="jumpToPanel(2)">
-        Explore the Taste
-      </button>
-    </div>
-    
-    <div class="marquee-wrap" aria-hidden="true">
-      <div class="marquee-track" id="marqueeTrack"></div>
-    </div>
-  </section>
-
-  <!-- PANEL 1: STORY -->
-  <section class="story-panel story-panel-block" id="philosophy">
-    <div class="phil-bg-text" aria-hidden="true">KAADA</div>
-    <span class="section-eyebrow">Our Philosophy</span>
-    <h2 class="phil-headline">
-      The Legend of the<br><em>Forest Quail</em>
-    </h2>
-    <div class="verse-block">
-      <p class="verse">"In the wilderness, God sent Manna — the bare minimum for survival."</p>
-      <div class="phil-divider" aria-hidden="true"></div>
-      <p class="verse">"But the people desired more. They craved the Quail."</p>
-      <div class="phil-divider" aria-hidden="true"></div>
-      <p class="verse gold">"The Quail was not sustenance. It was a wish. A luxury. A desire fulfilled."</p>
-    </div>
-    <p class="phil-body">
-      Born from the mist-covered hills of Kanjirappally, Kaadapakshi honours the quail — Kerala's most storied forest bird. We channel its wild, untamed essence into cuisine that transcends the ordinary. Every dish is a covenant with flavour. Every visit, an indulgence deserved.
-    </p>
-  </section>
-
-  <!-- PANEL 2: MENU -->
-  <section class="story-panel story-panel-block" id="menu">
+<section id="menu" class="section-wrap" aria-labelledby="menu-title">
+  <div class="section-max">
     <header class="menu-header">
       <span class="section-eyebrow">The Desires</span>
-      <h2 class="section-title">The Menu</h2>
+      <h2 class="section-title" id="menu-title">The Menu</h2>
     </header>
     <div class="menu-tabs" role="tablist">
       <button class="menu-tab active" role="tab" aria-selected="true"  data-tab="signature">Signature Delicacies</button>
@@ -470,7 +464,7 @@
     </div>
     <div class="menu-panel" id="tab-staples" role="tabpanel">
       <div class="menu-category-title">
-        <div class="mct-main">Cafe Staples &amp; Snacks</div>
+        <div class="mct-main">Cafe Staples & Snacks</div>
         <span class="mct-sub">Comfort Without Compromise</span>
       </div>
       <div class="menu-grid" id="grid-staples"></div>
@@ -484,15 +478,16 @@
     </div>
 
     <div class="menu-future">
-      <p>✦   Signature Biriyani &amp; Seasonal Specials — Coming Soon   ✦</p>
+      <p>✦   Signature Biriyani & Seasonal Specials — Coming Soon   ✦</p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- PANEL 3: AMBIANCE & LOCATION -->
-  <section class="story-panel story-panel-block" id="ambiance">
+<section id="ambiance" class="section-wrap" aria-labelledby="ambiance-title">
+  <div class="section-max">
     <div class="split-grid">
       <div class="ambiance-img-wrap">
-        <img src="assets/cafe-ambiance.png" alt="Kaadapakshi Cafe — natural seating and ambiance in Kanjirappally hills"
+        <img src="assets/cafe-ambiance.png" alt="Kaadapakshi Cafe — natural seating and ambiance"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
         <div class="ambiance-img-placeholder" style="display:none">
           <div class="big-icon">🌿</div>
@@ -502,7 +497,6 @@
         <div class="corner-tl" aria-hidden="true"></div>
         <div class="corner-br" aria-hidden="true"></div>
         
-        <!-- Fixed nested luxury container for Est. 2025 -->
         <div class="year-badge">
           <small>Est.</small>
           <strong>2025</strong>
@@ -510,8 +504,8 @@
       </div>
       <div class="ambiance-details">
         <span class="section-eyebrow" style="text-align:left;display:block;margin-bottom:.8rem">Find Us</span>
-        <h2 class="section-title" style="text-align:left;margin-bottom:1.5rem">
-          Ambiance &amp; <em>Details</em>
+        <h2 class="section-title" id="ambiance-title" style="text-align:left;margin-bottom:2rem">
+          Ambiance & <em>Details</em>
         </h2>
         <div class="detail-row">
           <div class="detail-icon">
@@ -558,19 +552,19 @@
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- PANEL 5: CONTACT & FORMSPREE QUERY -->
-  <section class="story-panel story-panel-block" id="contact">
-    <header style="text-align:center;margin-bottom:2.5rem">
+<section id="contact" class="section-wrap" aria-labelledby="contact-title">
+  <div class="section-max">
+    <header style="text-align:center;margin-bottom:3.5rem">
       <span class="section-eyebrow">Reach Out</span>
-      <h2 class="section-title">
-        Queries &amp; <em>Conversations</em>
+      <h2 class="section-title" id="contact-title" style="text-align:center">
+        Queries & <em>Conversations</em>
       </h2>
     </header>
     <div class="contact-grid">
       <div class="glass-card">
-        <!-- Input Formspree URL variable parameters directly inside the dynamic hook string -->
         <form action="https://formspree.io/f/xoqxxxxx" method="POST" id="contactForm">
           <div class="form-row">
             <div class="form-group">
@@ -597,35 +591,41 @@
         </form>
         <div class="form-success" id="formSuccess" aria-live="polite">
           <div class="form-success-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <h3>Message received.</h3>
           <p>We'll be in touch with you shortly.</p>
         </div>
       </div>
+      
       <div class="contact-side">
         <div class="social-card">
           <span class="social-card-label">Connect With Us</span>
-          <div class="social-row"><span class="social-icon">📸</span><div><div class="nav-link" style="padding:0;letter-spacing:normal">Instagram</div><a href="https://instagram.com/kaadapakshicafe" target="_blank" rel="noopener noreferrer" class="social-handle">@kaadapakshicafe</a></div></div>
-          <div class="social-row"><span class="social-icon">💬</span><div><div class="nav-link" style="padding:0;letter-spacing:normal">WhatsApp</div><a href="https://wa.me/919447416829" target="_blank" rel="noopener noreferrer" class="social-handle">+91 9447416829</a></div></div>
+          <div class="social-row"><span class="social-icon">📸</span><div><div style="font-size: .63rem; letter-spacing: .22em; text-transform: uppercase; color: var(--stone-500); margin-bottom: 2px;">Instagram</div><a href="https://instagram.com/kaadapakshicafe" target="_blank" rel="noopener noreferrer" class="social-handle">@kaadapakshicafe</a></div></div>
+          <div class="social-row"><span class="social-icon">💬</span><div><div style="font-size: .63rem; letter-spacing: .22em; text-transform: uppercase; color: var(--stone-500); margin-bottom: 2px;">WhatsApp</div><a href="https://wa.me/919447416829" target="_blank" rel="noopener noreferrer" class="social-handle">+91 9447416829</a></div></div>
         </div>
         <div class="map-card">
           <div class="map-inner">
             <div class="map-grid" aria-hidden="true"></div>
             <div class="map-pin"><svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg></div>
             <div class="map-label">Kalaketty, Kanjirappally<br><small style="font-size:.62rem;color:#3d3730">Kottayam, Kerala</small></div>
-            <a href="https://maps.google.com/?q=Kalaketty+Kanjirappally+Kottayam+Kerala" target="_blank" rel="noopener noreferrer" class="map-link">Open in Maps</a>
+            <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="map-link">Open in Maps</a>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-</div>
+<footer>
+  <div class="f-brand">Kaadapakshi</div>
+  <div class="f-loc">Kalaketty · Kanjirappally · Kottayam, Kerala</div>
+  <div class="f-div" aria-hidden="true"></div>
+  <div class="f-copy">© <span id="fyear"></span> Kaadapakshi. All rights reserved.</div>
+</footer>
 
-<!-- ══ SCRIPTS ════════════════════════════════════════════════════════ -->
 <script>
-/* ── MENU DATA ─────────────────────────────────────────────────────── */
+/* ── MENU DATA STRINGS (POINTED TO PNG VARIANTS) ───────────────────── */
 const MENU_DATA = {
   signature: [
     { name: "Kaada Varaval",      desc: "Crisp-fried quail in a masala of ancient Kerala spice lore — the dish that started it all.",      img: "assets/kaada-varaval.png",      accent: "#D4A843", emoji: "🍗" },
@@ -674,7 +674,7 @@ function buildMenu() {
 }
 
 function buildMarquee() {
-  const items = ["Kaada Varaval","Kaada Vilayichathu","Kaadamutta Fry","Chilly Chicken","Zinger Burger","Beef Cutlet","Quesadilla","Chicken Roll","Ila Ada","Cheese Bun","Juices &amp; Shakes","Fried Bread Sandwich"];
+  const items = ["Kaada Varaval","Kaada Vilayichathu","Kaadamutta Fry","Chilly Chicken","Zinger Burger","Beef Cutlet","Quesadilla","Chicken Roll","Ila Ada","Cheese Bun","Juices & Shakes","Fried Bread Sandwich"];
   const track = document.getElementById('marqueeTrack');
   const double = [...items, ...items];
   track.innerHTML = double.map(i => `<span class="marquee-item"><span class="marquee-dot"></span>${i}</span>`).join('');
@@ -682,7 +682,7 @@ function buildMarquee() {
 
 document.getElementById('fyear').textContent = new Date().getFullYear();
 
-/* ── CUSTOM CURSOR ─────────────────────────────────────────────────── */
+/* ── CUSTOM CURSOR NAVIGATION ─────────────────────────────────────── */
 const dot  = document.getElementById('cursor-dot');
 const ring = document.getElementById('cursor-ring');
 let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
@@ -699,16 +699,29 @@ document.querySelectorAll('a,button').forEach(el => {
   el.addEventListener('mouseleave', () => { ring.style.width='34px'; ring.style.height='34px'; ring.style.borderColor='rgba(212,168,67,.4)'; });
 });
 
-/* ── MOBILE MENU ───────────────────────────────────────────────────── */
+/* ── NAVIGATION SCROLL EFFECT ─────────────────────────────────────── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+}, { passive: true });
+
+/* ── MOBILE NAVBAR MENU TOGGLES ───────────────────────────────────── */
 const burger = document.getElementById('burgerBtn');
 const mobileMenu = document.getElementById('mobile-menu');
 burger.addEventListener('click', () => {
   const open = mobileMenu.classList.toggle('open');
   burger.classList.toggle('open', open);
+  burger.setAttribute('aria-expanded', open);
   mobileMenu.setAttribute('aria-hidden', !open);
 });
+document.querySelectorAll('.mob-link').forEach(link => {
+  link.addEventListener('click', () => {
+    mobileMenu.classList.remove('open');
+    burger.classList.remove('open');
+  });
+});
 
-/* ── SOUND TOGGLE ──────────────────────────────────────────────────── */
+/* ── AMBIENT AUDIO SYSTEM CONTROLLER ──────────────────────────────── */
 let soundOn = false; let audioCtx = null; let gainNode = null;
 function createAmbience() {
   if (audioCtx) return;
@@ -727,11 +740,11 @@ function createAmbience() {
 document.getElementById('soundBtn').addEventListener('click', () => {
   soundOn = !soundOn; createAmbience();
   gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
-  gainNode.gain.linearRampToValueAtTime(soundOn ? 0.05 : 0, audioCtx.currentTime + 1.2);
+  gainNode.gain.linearRampToValueAtTime(soundOn ? 0.04 : 0, audioCtx.currentTime + 1.2);
   document.getElementById('soundLabel').textContent = soundOn ? 'Mute' : 'Ambience';
 });
 
-/* ── MENU TABS ─────────────────────────────────────────────────────── */
+/* ── CARD NAVIGATION CATEGORIES ───────────────────────────────────── */
 document.querySelectorAll('.menu-tab').forEach(btn => {
   btn.addEventListener('click', () => {
     const tab = btn.dataset.tab;
@@ -739,133 +752,149 @@ document.querySelectorAll('.menu-tab').forEach(btn => {
     document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active'); btn.setAttribute('aria-selected','true');
     document.getElementById(`tab-${tab}`).classList.add('active');
-    gsap.fromTo(`#tab-${tab} .menu-card`, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: .4, stagger: .05, ease: 'power2.out' });
+    gsap.fromTo(`#tab-${tab} .menu-card`, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: .4, stagger: .06, ease: 'power2.out' });
   });
 });
 
-/* ── DECK LOGIC CHANGER ENGINE (STABILITY UPDATE) ─────────────────── */
-let currentPanelIndex = -1; 
-const panels = document.querySelectorAll('.story-panel-block');
-let isAnimating = false;
-let introComplete = false;
+/* ── FORM FORMSPREE FEEDBACK TRIGGER ──────────────────────────────── */
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+  // Let Formspree handle the submission directly over network request lines
+  const form = this;
+  const successState = document.getElementById('formSuccess');
+  
+  // Minimal visual switch delay logic
+  setTimeout(() => {
+    gsap.to(form, { opacity: 0, y: -10, duration: 0.3, onComplete: () => {
+      form.style.display = 'none';
+      successState.classList.add('show');
+      gsap.fromTo(successState, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.4 });
+    }});
+  }, 200);
+});
 
-function initIntroEngine() {
-  gsap.timeline({
-    scrollTrigger: {
-      trigger: "body",
-      start: "top top",
-      end: "+=100",
-      scrub: 1,
-      onLeave: () => {
-        if(!introComplete) {
-          introComplete = true;
-          gsap.to("#scroll-hintText", { opacity: 0, duration: 0.2 });
-          gsap.to("#curtainPanel", { scale: 38, opacity: 0, duration: 0.9, ease: "power2.in", onComplete: () => {
-            document.getElementById('scroll-curtain').style.display = 'none';
-            currentPanelIndex = 0;
-            updatePanelState(0, 'down');
-          }});
-        }
-      }
+/* ── AUTOMATIC INTRO LOADER TIMELINE ENGINE (REPLACES SCROLL PIN) ──── */
+function triggerCinematicIntro() {
+  // Clear any existing anchor hash bugs by locking view instantly to absolute top
+  if(window.location.hash) {
+    window.scrollTo(0,0);
+  }
+
+  const introTL = gsap.timeline({
+    onComplete: () => {
+      // Safely turn scrolling controls back on only AFTER logo finishes zooming out
+      document.body.style.overflow = "visible";
+      document.body.style.overflowX = "hidden";
     }
   });
-  
-  // Mobile fallback activator link hook
-  document.getElementById('scroll-curtain').addEventListener('click', () => {
-    if(!introComplete) {
-      introComplete = true;
-      gsap.to("#scroll-hintText", { opacity: 0, duration: 0.2 });
-      gsap.to("#curtainPanel", { scale: 38, opacity: 0, duration: 0.8, ease: "power2.in", onComplete: () => {
-        document.getElementById('scroll-curtain').style.display = 'none';
-        currentPanelIndex = 0;
-        updatePanelState(0, 'down');
-      }});
-    }
-  });
-}
 
-function updatePanelState(index, direction) {
-  isAnimating = true;
-  
-  // Highlight navigation indicators safely
-  document.querySelectorAll('.ind-dot').forEach((dot, idx) => {
-    dot.classList.toggle('active', idx === index);
-  });
-  
-  const currentActive = document.querySelector('.story-panel.active');
-  const nextTarget = panels[index];
-  
-  if (currentActive && currentActive !== nextTarget) {
-    gsap.to(currentActive, {
+  introTL
+    // Step 1: Wait 1 second on your real green bird logo centered in obsidian dark space
+    .to("#curtainPanel", { opacity: 1, duration: 1 })
+    // Step 2: Scale your actual logo drawing outwards past camera lens boundaries smoothly
+    .to("#curtainPanel", {
+      scale: 36,
       opacity: 0,
-      y: direction === 'down' ? -40 : 40,
-      duration: 0.6,
-      ease: 'power2.inOut',
+      duration: 1.2,
+      ease: "power2.in"
+    })
+    // Step 3: Unveil the black masking layer and display your homepage blocks below it
+    .to("#scroll-curtain", {
+      opacity: 0,
+      duration: 0.4,
       onComplete: () => {
-        currentActive.classList.remove('active');
+        document.getElementById('scroll-curtain').style.display = 'none';
       }
+    }, "-=0.4")
+    // Step 4: Make your home block elements fade in seamlessly without clashing layers
+    .set("#heroContentBlock", { visibility: "visible" })
+    .to("#heroContentBlock", {
+      opacity: 1,
+      scale: 1,
+      duration: 0.8,
+      ease: "power3.out"
+    }, "-=0.2")
+    // Step 5: Float navbar menu options into view
+    .to("#nav", { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, "-=0.5")
+    .to("#siteScrollHint", { opacity: 1, duration: 0.4 }, "-=0.3");
+
+  /* ── STANDARD STRUCTURAL ONSCROLL PARALLAX REVEALS ── */
+  gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+  // Nav menu item smooth redirect logic hooks
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const hrefAttr = a.getAttribute('href');
+      gsap.to(window, { duration: 1, scrollTo: { y: hrefAttr, offsetY: 64 }, ease: 'power3.inOut' });
     });
-  }
+  });
 
-  nextTarget.classList.add('active');
-  
-  // Lock initial elements placement properties to stop stray flashes
-  gsap.fromTo(nextTarget, 
-    { opacity: 0, y: direction === 'down' ? 40 : -40 },
-    { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out', delay: 0.1, onComplete: () => {
-      isAnimating = false;
-    }}
-  );
-  
-  // Trigger internal text slide animations smoothly
-  if (index === 0) {
-    gsap.fromTo("#heroContentBlock", { opacity:0, scale:0.95 }, { opacity:1, scale:1, duration:0.6, ease:'power3.out' });
-    gsap.to("#nav", { opacity: 1, y: 0, duration: 0.4 });
-  }
-  if (index === 1) {
-    gsap.fromTo("#philosophy .phil-headline, #philosophy .verse", { opacity:0, y:15 }, { opacity:1, y:0, duration:0.5, stagger:0.1 });
-  }
+  gsap.to('.bg-word-1', {
+    scrollTrigger: { trigger:'#hero', start:'top top', end:'bottom top', scrub: 1 },
+    y: -100, opacity: 0.08, ease:'none'
+  });
+  gsap.to('.bg-word-2', {
+    scrollTrigger: { trigger:'#hero', start:'top top', end:'bottom top', scrub: 1 },
+    y: -60, opacity: 0.05, ease:'none'
+  });
+  gsap.to('.hero-grid', {
+    scrollTrigger: { trigger:'#hero', start:'top top', end:'bottom top', scrub: 1 },
+    y: 40, ease:'none'
+  });
+  gsap.to('.phil-bg-text', {
+    scrollTrigger: { trigger:'#philosophy', start:'top bottom', end:'bottom top', scrub: 1.5 },
+    y: -60, scale: 1.08, opacity: 0.04, ease:'none'
+  });
+
+  ScrollTrigger.create({
+    trigger: '#philosophy',
+    start: 'top 80%',
+    onEnter: () => {
+      const tl = gsap.timeline();
+      tl.to('#philosophy .section-eyebrow', { opacity:1, y:0, duration:0.5 })
+        .to('.phil-headline',   { opacity:1, y:0, duration:0.6 }, '-=0.2')
+        .to('.verse',           { opacity:1, y:0, duration:0.5, stagger:0.2 }, '-=0.2')
+        .to('.phil-divider',    { opacity:1, duration:0.4, stagger:0.15 }, '-=0.6')
+        .to('.phil-body',       { opacity:1, y:0, duration:0.6 }, '-=0.2');
+    }
+  });
+
+  ScrollTrigger.create({
+    trigger: '#menu',
+    start: 'top 80%',
+    onEnter: () => {
+      gsap.to('#menu .section-title', { opacity:1, y:0, duration:0.6 });
+      gsap.to('#tab-signature .menu-card', { opacity:1, y:0, duration:0.5, stagger:0.08, delay:0.2 });
+    }
+  });
+
+  ScrollTrigger.create({
+    trigger: '#ambiance',
+    start: 'top 80%',
+    onEnter: () => {
+      gsap.to('.ambiance-img-wrap',  { opacity:1, x:0, duration:0.7 });
+      gsap.to('.ambiance-details',   { opacity:1, x:0, duration:0.7, delay:0.1 });
+    }
+  });
+
+  ScrollTrigger.create({
+    trigger: '#contact',
+    start: 'top 80%',
+    onEnter: () => {
+      gsap.to('.glass-card',  { opacity:1, y:0, duration:0.6 });
+      gsap.to('.social-card', { opacity:1, y:0, duration:0.5, delay:0.1 });
+      gsap.to('.map-card',    { opacity:1, y:0, duration:0.5, delay:0.2 });
+    }
+  });
 }
 
-function jumpToPanel(index) {
-  if (index === currentPanelIndex || isAnimating || !introComplete) return;
-  const direction = index > currentPanelIndex ? 'down' : 'up';
-  currentPanelIndex = index;
-  updatePanelState(index, direction);
-}
-
-// Intercept desktop mousewheel and tactile mobile screen drag coordinates cleanly
-window.addEventListener('wheel', e => {
-  if (!introComplete || isAnimating) return;
-  if (e.deltaY > 25 && currentPanelIndex < panels.length - 1) {
-    currentPanelIndex++;
-    updatePanelState(currentPanelIndex, 'down');
-  } else if (e.deltaY < -25 && currentPanelIndex > 0) {
-    currentPanelIndex--;
-    updatePanelState(currentPanelIndex, 'up');
-  }
-}, { passive: true });
-
-let touchStartY = 0;
-window.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
-window.addEventListener('touchend', e => {
-  if (!introComplete || isAnimating) return;
-  const touchEndY = e.changedTouches[0].clientY;
-  const diff = touchStartY - touchEndY;
-  if (diff > 50 && currentPanelIndex < panels.length - 1) {
-    currentPanelIndex++;
-    updatePanelState(currentPanelIndex, 'down');
-  } else if (diff < -50 && currentPanelIndex > 0) {
-    currentPanelIndex--;
-    updatePanelState(currentPanelIndex, 'up');
-  }
-}, { passive: true });
-
-/* ── DOM INITIATION ───────────────────────────────────────────────── */
+/* ── DOM INITIALIZATION LAUNCH ─────────────────────────────────────── */
 window.addEventListener('DOMContentLoaded', () => {
   buildMenu();
   buildMarquee();
-  initIntroEngine();
+  
+  // Fire introduction sequences instantly on paint
+  triggerCinematicIntro();
 });
 </script>
 </body>

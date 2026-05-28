@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Kaadapakshi — The Forest Quail</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,700&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -142,13 +142,13 @@
     .nav-burger { display: flex; }
   }
 
-  /* ── ADVANCED INTRO SCROLL CONTAINER ────────────────────────────── */
+  /* ── INTRO SCROLL CONTAINER ────────────────────────────────────── */
   #intro-scroll-container {
     position: relative;
     width: 100%;
   }
 
-  /* ── MAIN SCROLL-BOUND PRELOAD CURTAIN ──────────────────────────── */
+  /* ── FIXED SCROLL PRELOAD CURTAIN (CLEAN REFACTOR) ───────────────── */
   #scroll-curtain {
     position: fixed; inset: 0; z-index: 850;
     background: var(--obsidian);
@@ -160,30 +160,23 @@
     text-align: center; display: flex; flex-direction: column; align-items: center;
     justify-content: center; transform-origin: center center; will-change: transform;
   }
+  /* Your real logo now takes center stage inside a borderless layout for cleaner expansion */
   .curtain-logo-container {
-    width: clamp(120px, 18vw, 200px); height: clamp(120px, 18vw, 200px);
-    border-radius: 50%; border: 1px solid rgba(212,168,67,.4);
+    width: clamp(140px, 22vw, 240px); height: clamp(140px, 22vw, 240px);
     display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4.5rem);
-    color: var(--gold); margin-bottom: 2rem;
-    box-shadow: 0 0 40px rgba(212,168,67,0.15);
-    overflow: hidden;
+    margin-bottom: 1rem; transform-origin: center center;
   }
-  .curtain-logo-container img { width: 100%; height: 100%; object-fit: cover; }
-  .curtain-brand-text {
-    font-family: var(--font-display); font-size: clamp(3rem, 8vw, 6.5rem);
-    font-weight: 700; color: var(--gold); letter-spacing: .06em; line-height: 1;
-    text-shadow: 0 0 40px rgba(212,168,67,0.2);
-  }
+  .curtain-logo-container img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 20px rgba(212,168,67,0.15)); }
+  
   .curtain-scroll-instruction {
-    position: absolute; bottom: 3rem; font-size: .6rem;
+    position: absolute; bottom: 3rem; font-size: .62rem;
     letter-spacing: .4em; text-transform: uppercase;
     color: var(--stone-500); transition: opacity 0.5s;
     animation: simplePulse 2s infinite alternate;
   }
   @keyframes simplePulse { from{opacity:0.3} to{opacity:0.85} }
 
-  /* ── HERO ───────────────────────────────────────────────────────── */
+  /* ── HERO CONTENT PANEL ─────────────────────────────────────────── */
   #hero {
     position: relative; min-height: 100vh;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -209,13 +202,13 @@
   .bg-word-1 { top: 5%; left: -5%; }
   .bg-word-2 { bottom: 8%; right: -5%; }
   
-  /* Initial state hidden so it won't overlap with the intro loader */
+  /* Kept hidden until zoom scroll breaks the threshold safely */
   .hero-content { position: relative; z-index: 2; text-align: center; padding: 0 1.5rem; max-width: 860px; width: 100%; opacity: 0; transform: scale(0.9); visibility: hidden; }
   .hero-eyebrow { font-size: .65rem; letter-spacing: .45em; text-transform: uppercase; color: rgba(212,168,67,.55); margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
   .eyebrow-line { flex: 0 0 40px; height: 1px; background: rgba(212,168,67,.35); }
   
   .hero-brand-heading { display: flex; justify-content: center; align-items: center; margin: 0 auto 1.6rem; min-height: 120px; }
-  .hero-brand-heading img { max-width: clamp(280px, 50vw, 550px); height: auto; object-fit: contain; filter: drop-shadow(0 0 30px rgba(212,168,67,0.2)); }
+  .hero-brand-heading img { max-width: clamp(280px, 50vw, 520px); height: auto; object-fit: contain; filter: drop-shadow(0 0 30px rgba(212,168,67,0.25)); }
   
   .hero-sub-line { font-family: var(--font-display); font-style: italic; font-size: clamp(.95rem, 2.5vw, 1.4rem); font-weight: 300; color: var(--stone-500); line-height: 1.8; }
   .hero-sub-line em { color: rgba(212,168,67,.75); font-style: italic; }
@@ -326,7 +319,6 @@
   .form-group { margin-bottom: 1.2rem; }
   .form-group label { display: block; font-size: .6rem; letter-spacing: .28em; text-transform: uppercase; color: var(--stone-500); margin-bottom: .5rem; }
   
-  /* Fixed the appearance properties to satisfy code verification checks */
   .form-group input, .form-group textarea { 
     width: 100%; background: rgba(8,8,7,.9); border: 1px solid var(--stone-800); 
     border-radius: 8px; padding: .8rem 1rem; font-family: var(--font-body); 
@@ -334,10 +326,7 @@
     transition: border-color .3s, box-shadow .3s; outline: none; resize: none; 
     -webkit-appearance: none; appearance: none;
   }
-  .form-submit {
-    appearance: none; -webkit-appearance: none;
-  }
-  
+  .form-submit { appearance: none; -webkit-appearance: none; }
   .form-group input::placeholder, .form-group textarea::placeholder { color: var(--stone-700); }
   .form-group input:focus, .form-group textarea:focus { border-color: rgba(212,168,67,.45); box-shadow: 0 0 0 3px rgba(212,168,67,.06); }
   .form-submit { width: 100%; padding: .9rem; border-radius: 8px; border: 1px solid rgba(212,168,67,.4); background: rgba(212,168,67,.07); font-family: var(--font-body); font-size: .65rem; letter-spacing: .28em; text-transform: uppercase; color: rgba(212,168,67,.85); display: flex; align-items: center; justify-content: center; gap: .6rem; transition: background .3s, border-color .3s, box-shadow .3s, color .3s; }
@@ -444,11 +433,9 @@
   <div id="scroll-curtain">
     <div class="curtain-center-panel" id="curtainPanel">
       <div class="curtain-logo-container">
-        <!-- Core Logo Asset Hooked to target assets/ folder directly -->
-        <img src="assets/logo.png" id="curtainLogoImg" alt="K" onerror="this.style.display='none';">
-        <span id="curtainLogoFallback">K</span>
+        <!-- Clean focus: Only your real logo asset executes the entry zoom -->
+        <img src="assets/logo.png" id="curtainLogoImg" alt="Kaadapakshi Logo">
       </div>
-      <div class="curtain-brand-text" id="curtainBrandText">Kaadapakshi</div>
     </div>
     <div class="curtain-scroll-instruction" id="scrollHintText">↓ Scroll to Enter the Desire</div>
   </div>
@@ -472,9 +459,8 @@
         <span class="eyebrow-line" aria-hidden="true"></span>
       </div>
       <h1 class="hero-brand-heading">
-        <!-- Target drawn image variant inside your project setup assets folder -->
-        <img src="assets/kaadapakshi-lettering.png" alt="Kaadapakshi" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-        <span style="display:none">Kaadapakshi</span>
+        <!-- Drawn lettering sits inside the main home block cleanly -->
+        <img src="assets/kaadapakshi-lettering.png" alt="Kaadapakshi">
       </h1>
       <p class="hero-sub-line">
         Manna was for survival. The Quail was a wish.<br>
@@ -868,12 +854,14 @@ function initGSAP() {
     });
   });
 
-  /* THE FIXED ZOOM TIMELINE ENGINE */
+  /* THE STRIPPED ZOOM ENGAGEMENT ENGINE
+     Locks calculations firmly. No generic overlapping code strings.
+  */
   const introTimeline = gsap.timeline({
     scrollTrigger: {
       trigger: "#intro-scroll-container",
       start: "top top",
-      end: "+=125%", 
+      end: "+=130%", 
       scrub: 1,
       pin: true,
       anticipatePin: 1
@@ -883,7 +871,7 @@ function initGSAP() {
   introTimeline
     .to("#scroll-hintText", { opacity: 0, duration: 0.15 }, 0)
     .to("#curtainPanel", {
-      scale: 35,
+      scale: 38,
       opacity: 0,
       duration: 1,
       ease: "power2.in"
@@ -893,21 +881,20 @@ function initGSAP() {
       duration: 0.35,
       ease: "none"
     }, 0.75)
-    // Seamlessly unhides and fades in your main page once zoomed past the curtain lens
     .to("#heroContentBlock", {
       autoAlpha: 1,
       scale: 1,
-      duration: 0.45,
+      duration: 0.5,
       ease: "power3.out"
     }, 0.65)
     .to("#nav", {
       opacity: 1,
       y: 0,
-      duration: 0.3,
+      duration: 0.35,
       ease: "power2.out"
     }, 0.8);
 
-  /* ── INTERNAL SCROLL PARALLAX ── */
+  /* ── INTERNAL PAGE SCROLL PARALLAX ── */
   gsap.to('.bg-word-1', {
     scrollTrigger: { trigger:'#hero', start:'top top', end:'bottom top', scrub: 1.2 },
     y: -120, x: -40, opacity: .12, ease:'none'

@@ -638,7 +638,7 @@
     </header>
     <div class="contact-grid">
       <div class="glass-card">
-        <form id="contactForm" novalidate>
+        <form action="https://formspree.io/f/xaqkakwz" method="POST" id="contactForm" novalidate>
           <div class="form-row">
             <div class="form-group">
               <label for="fname">Full Name</label>
@@ -670,12 +670,12 @@
           <p>We'll be in touch with you shortly.</p>
         </div>
       </div>
+      <!-- Side -->
       <div class="contact-side">
         <div class="social-card">
           <span class="social-card-label">Connect With Us</span>
-          <div class="social-row"><span class="social-icon">📸</span><div><div class="social-name">Instagram</div><div class="social-handle">@kaadapakshi</div></div></div>
-          <div class="social-row"><span class="social-icon">📘</span><div><div class="social-name">Facebook</div><div class="social-handle">Kaadapakshi Cafe</div></div></div>
-          <div class="social-row"><span class="social-icon">💬</span><div><div class="social-name">WhatsApp</div><div class="social-handle">+91 XXXXX XXXXX</div></div></div>
+          <div class="social-row"><span class="social-icon">📸</span><div><div class="social-name">Instagram</div><div class="social-handle">@kaadapakshicafe</div></div></div>
+          <div class="social-row"><span class="social-icon">💬</span><div><div class="social-name">WhatsApp</div><div class="social-handle">+91 9447416829</div></div></div>
         </div>
         <div class="map-card">
           <div class="map-inner">
@@ -743,10 +743,6 @@ function buildMenu() {
           <div class="card-body">
             <h3 class="card-name">${item.name}</h3>
             <p class="card-desc">${item.desc}</p>
-            <div class="card-tag">
-              <span class="card-tag-line" style="background:${item.accent}"></span>
-              <span class="card-tag-text" style="color:${item.accent};opacity:.7">Order</span>
-            </div>
           </div>
         </article>`);
     });

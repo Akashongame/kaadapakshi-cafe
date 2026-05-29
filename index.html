@@ -1,1673 +1,596 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
 <title>Kaadapakshi — The Forest Quail</title>
-
-<!-- GOOGLE FONTS -->
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
-
-<!-- GSAP -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,700&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-
 <style>
-
-/* =========================================================
-RESET
-========================================================= */
-
-*,
-*::before,
-*::after{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-html,
-body{
-  width:100%;
-  overflow-x:hidden;
-  background:#050504;
-  color:#e8e0d4;
-  font-family:'Jost',sans-serif;
-  scroll-behavior:smooth;
-}
-
-/* =========================================================
-ROOT
-========================================================= */
-
-:root{
-
-  --gold:#D4A843;
-  --gold-dim:rgba(212,168,67,.18);
-  --gold-soft:rgba(212,168,67,.08);
-
-  --obsidian:#050504;
-  --obsidian-2:#0a0908;
-  --obsidian-3:#111009;
-
-  --stone:#e8e0d4;
-  --stone-2:#b6a99a;
-  --stone-3:#776d63;
-  --stone-4:#322d28;
-
-  --display:'Cormorant Garamond', serif;
-  --body:'Jost', sans-serif;
-}
-
-/* =========================================================
-BASE
-========================================================= */
-
-img{
-  display:block;
-  max-width:100%;
-}
-
-a{
-  text-decoration:none;
-  color:inherit;
-}
-
-body::-webkit-scrollbar{
-  width:8px;
-}
-
-body::-webkit-scrollbar-thumb{
-  background:rgba(212,168,67,.2);
-}
-
-/* =========================================================
-NOISE
-========================================================= */
-
-#noise{
-  position:fixed;
-  inset:0;
-  z-index:2;
-  pointer-events:none;
-  opacity:.03;
-
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-
-  animation:noiseMove 8s steps(10) infinite;
-}
-
-@keyframes noiseMove{
-  0%{transform:translate(0)}
-  25%{transform:translate(-2%,1%)}
-  50%{transform:translate(1%,-2%)}
-  75%{transform:translate(-1%,2%)}
-  100%{transform:translate(0)}
-}
-
-/* =========================================================
-CURSOR
-========================================================= */
-
-#cursor-dot,
-#cursor-ring{
-  position:fixed;
-  pointer-events:none;
-  z-index:9999;
-  transform:translate(-50%,-50%);
-}
-
-#cursor-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:var(--gold);
-  box-shadow:0 0 14px rgba(212,168,67,.7);
-}
-
-#cursor-ring{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  border:1px solid rgba(212,168,67,.4);
-}
-
-@media(max-width:768px){
-  #cursor-dot,
-  #cursor-ring{
-    display:none;
+  /* ── RESET & BASE ──────────────────────────────────────────────── */
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --gold: #D4A843;
+    --gold-dim: rgba(212,168,67,0.35);
+    --gold-glow: rgba(212,168,67,0.15);
+    --obsidian: #050504;
+    --obsidian-2: #0a0908;
+    --obsidian-3: #111009;
+    --stone-100: #e8e0d4;
+    --stone-300: #b5a99a;
+    --stone-500: #7a6e62;
+    --stone-700: #3d3730;
+    --stone-800: #262018;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'Jost', sans-serif;
   }
-}
-
-/* =========================================================
-SCROLL ENGINE
-========================================================= */
-
-#scroll-track-rig{
-  position:relative;
-  width:100%;
-  height:700vh;
-  background:var(--obsidian);
-}
-
-#fixed-view-viewport{
-  position:fixed;
-  inset:0;
-  overflow:hidden;
-}
-
-/* =========================================================
-PANELS
-========================================================= */
-
-.deck-section{
-
-  position:absolute;
-  inset:0;
-
-  width:100%;
-  height:100vh;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  padding:0 1.5rem;
-
-  transform-origin:center center;
-
-  opacity:0;
-  visibility:hidden;
-
-  will-change:transform,opacity;
-
-  overflow:hidden;
-}
-
-.panel-inner{
-  width:100%;
-  max-width:1200px;
-  margin-inline:auto;
-}
-
-/* =========================================================
-NAVBAR
-========================================================= */
-
-#nav{
-
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-
-  z-index:2000;
-
-  height:72px;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  padding:0 2rem;
-
-  background:rgba(5,5,4,.68);
-
-  backdrop-filter:blur(18px);
-
-  border-bottom:1px solid rgba(212,168,67,.08);
-
-  opacity:0;
-}
-
-.nav-left{
-  display:flex;
-  align-items:center;
-  gap:.8rem;
-}
-
-.logo-ring{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  border:1px solid var(--gold);
-  overflow:hidden;
-}
-
-.logo-ring img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.logo-text{
-  font-family:var(--display);
-  font-size:.72rem;
-  letter-spacing:.24em;
-  text-transform:uppercase;
-  color:rgba(212,168,67,.72);
-}
-
-/* DESKTOP NAV */
-
-.nav-links{
-  display:flex;
-  align-items:center;
-  gap:2.2rem;
-}
-
-.nav-link{
-  font-size:.68rem;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:var(--stone-3);
-  transition:.3s;
-  cursor:pointer;
-}
-
-.nav-link:hover{
-  color:var(--gold);
-}
-
-/* =========================================================
-MOBILE MENU
-========================================================= */
-
-.mobile-btn{
-  display:none;
-
-  background:none;
-  border:none;
-
-  color:var(--gold);
-
-  font-size:1.8rem;
-}
-
-.mobile-menu{
-
-  position:fixed;
-  inset:0;
-
-  background:rgba(5,5,4,.98);
-
-  z-index:5000;
-
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-
-  gap:2rem;
-
-  opacity:0;
-  pointer-events:none;
-
-  transition:.4s;
-}
-
-.mobile-menu.active{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.mobile-menu a{
-  font-family:var(--display);
-  font-size:2rem;
-  color:var(--stone);
-}
-
-.mobile-close{
-  position:absolute;
-  top:25px;
-  right:25px;
-
-  background:none;
-  border:none;
-
-  color:var(--gold);
-
-  font-size:2rem;
-}
-
-/* =========================================================
-INTRO PANEL
-========================================================= */
-
-#panel-curtain{
-  opacity:1;
-  visibility:visible;
-  z-index:100;
-}
-
-.curtain-logo-wrap{
-  width:clamp(160px,22vw,240px);
-}
-
-.curtain-logo-wrap img{
-  width:100%;
-  height:auto;
-}
-
-.scroll-note{
-  position:absolute;
-  bottom:3rem;
-
-  text-transform:uppercase;
-  letter-spacing:.4em;
-  font-size:.65rem;
-
-  color:var(--stone-3);
-}
-
-/* =========================================================
-HERO
-========================================================= */
-
-.hero-bg{
-  position:absolute;
-  inset:0;
-
-  background:
-  radial-gradient(
-    ellipse 80% 60% at 50% 65%,
-    rgba(180,120,20,.1) 0%,
-    transparent 70%
-  ),
-  var(--obsidian);
-}
-
-.hero-grid{
-  position:absolute;
-  inset:0;
-
-  opacity:.04;
-
-  background-image:
-  linear-gradient(rgba(212,168,67,.8) 1px, transparent 1px),
-  linear-gradient(90deg, rgba(212,168,67,.8) 1px, transparent 1px);
-
-  background-size:80px 80px;
-}
-
-.hero-content{
-  position:relative;
-  z-index:5;
-
-  width:100%;
-  max-width:900px;
-
-  text-align:center;
-
-  margin-inline:auto;
-}
-
-.hero-eyebrow{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:1rem;
-
-  margin-bottom:1.5rem;
-
-  text-transform:uppercase;
-  letter-spacing:.32em;
-  font-size:.68rem;
-
-  color:rgba(212,168,67,.58);
-}
-
-.hero-line{
-  width:45px;
-  height:1px;
-  background:rgba(212,168,67,.35);
-}
-
-.hero-brand{
-  display:flex;
-  justify-content:center;
-  margin-bottom:1.8rem;
-}
-
-.hero-brand img{
-  width:min(540px,92%);
-}
-
-.hero-sub{
-  font-family:var(--display);
-  font-style:italic;
-  font-size:clamp(1rem,2vw,1.5rem);
-  line-height:1.8;
-  color:var(--stone-2);
-}
-
-.hero-sub em{
-  color:rgba(212,168,67,.85);
-}
-
-/* =========================================================
-PHILOSOPHY
-========================================================= */
-
-#panel-philosophy{
-  text-align:center;
-}
-
-.phil-bg{
-  position:absolute;
-  inset:0;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-family:var(--display);
-  font-size:16vw;
-  font-weight:700;
-
-  color:transparent;
-
-  -webkit-text-stroke:1px rgba(212,168,67,.03);
-}
-
-.eyebrow{
-  text-transform:uppercase;
-  letter-spacing:.35em;
-  font-size:.65rem;
-  color:rgba(212,168,67,.55);
-
-  margin-bottom:1.5rem;
-}
-
-.section-title{
-  font-family:var(--display);
-  font-size:clamp(2.5rem,5vw,4.8rem);
-  line-height:1.05;
-  font-weight:400;
-}
-
-.section-title em{
-  color:var(--gold);
-  font-style:italic;
-}
-
-.verse-wrap{
-  margin-top:2.5rem;
-}
-
-.verse{
-  font-family:var(--display);
-  font-style:italic;
-  font-size:clamp(1rem,2vw,1.4rem);
-  line-height:2;
-  color:var(--stone-2);
-}
-
-.verse.gold{
-  color:rgba(212,168,67,.85);
-}
-
-.story-body{
-  max-width:700px;
-  margin:2.5rem auto 0;
-
-  line-height:2;
-  color:var(--stone-3);
-}
-
-/* =========================================================
-MENU
-========================================================= */
-
-#panel-menu{
-  background:var(--obsidian-2);
-}
-
-.menu-wrap{
-  width:100%;
-  max-width:1200px;
-}
-
-.tabs{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:.8rem;
-
-  margin:2rem 0 3rem;
-}
-
-.tab{
-  padding:.6rem 1.4rem;
-
-  border-radius:999px;
-
-  border:1px solid var(--stone-4);
-
-  background:none;
-
-  text-transform:uppercase;
-  letter-spacing:.18em;
-  font-size:.62rem;
-
-  color:var(--stone-3);
-
-  transition:.3s;
-
-  cursor:pointer;
-}
-
-.tab.active{
-  border-color:rgba(212,168,67,.45);
-  background:rgba(212,168,67,.08);
-  color:var(--gold);
-}
-
-.menu-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:1.5rem;
-}
-
-.card{
-  background:var(--obsidian-3);
-
-  border-radius:18px;
-
-  overflow:hidden;
-
-  border:1px solid rgba(255,255,255,.04);
-}
-
-.card-img{
-  height:180px;
-  overflow:hidden;
-}
-
-.card-img img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-
-  transition:1s;
-}
-
-.card:hover img{
-  transform:scale(1.08);
-}
-
-.card-body{
-  padding:1.2rem;
-}
-
-.card-title{
-  font-family:var(--display);
-  font-size:1.4rem;
-  margin-bottom:.4rem;
-}
-
-.card-desc{
-  color:var(--stone-3);
-  line-height:1.7;
-}
-
-/* =========================================================
-AMBIANCE
-========================================================= */
-
-.ambiance-grid{
-  width:100%;
-  max-width:1200px;
-
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:4rem;
-}
-
-.ambiance-img{
-  border-radius:20px;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.05);
-}
-
-.ambiance-img img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.detail{
-  padding:1rem 0;
-  border-bottom:1px solid rgba(255,255,255,.05);
-}
-
-.detail-label{
-  text-transform:uppercase;
-  letter-spacing:.25em;
-  font-size:.62rem;
-  color:var(--stone-3);
-  margin-bottom:.4rem;
-}
-
-.detail-value{
-  line-height:1.8;
-}
-
-/* =========================================================
-CONTACT
-========================================================= */
-
-#panel-contact{
-  background:var(--obsidian-2);
-}
-
-.contact-grid{
-  width:100%;
-  max-width:1200px;
-
-  display:grid;
-  grid-template-columns:1.5fr 1fr;
-  gap:2rem;
-}
-
-.glass{
-  background:rgba(255,255,255,.02);
-
-  border:1px solid rgba(255,255,255,.05);
-
-  border-radius:20px;
-
-  padding:2rem;
-}
-
-.form-group{
-  margin-bottom:1.2rem;
-}
-
-.form-group label{
-  display:block;
-
-  margin-bottom:.6rem;
-
-  text-transform:uppercase;
-  letter-spacing:.25em;
-  font-size:.62rem;
-
-  color:var(--stone-3);
-}
-
-.form-group input,
-.form-group textarea{
-
-  width:100%;
-
-  background:#0a0908;
-
-  border:1px solid rgba(255,255,255,.05);
-
-  border-radius:12px;
-
-  padding:1rem;
-
-  color:white;
-
-  outline:none;
-}
-
-.submit-btn{
-
-  width:100%;
-
-  padding:1rem;
-
-  border-radius:14px;
-
-  border:1px solid rgba(212,168,67,.4);
-
-  background:rgba(212,168,67,.08);
-
-  color:rgba(212,168,67,.9);
-
-  text-transform:uppercase;
-  letter-spacing:.25em;
-
-  cursor:pointer;
-
-  transition:.3s;
-}
-
-.submit-btn:hover{
-  background:rgba(212,168,67,.15);
-}
-
-.social{
-  margin-bottom:1.5rem;
-}
-
-.social-title{
-  text-transform:uppercase;
-  letter-spacing:.3em;
-  font-size:.62rem;
-
-  color:var(--stone-3);
-
-  margin-bottom:1rem;
-}
-
-.social-row{
-  display:flex;
-  align-items:center;
-  gap:.8rem;
-
-  padding:.7rem 0;
-}
-
-.map{
-  height:240px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.map-link{
-  padding:.8rem 1.4rem;
-
-  border-radius:999px;
-
-  border:1px solid rgba(212,168,67,.28);
-
-  text-transform:uppercase;
-  letter-spacing:.2em;
-  font-size:.7rem;
-
-  color:var(--gold);
-}
-
-/* =========================================================
-TOAST
-========================================================= */
-
-.toast{
-
-  position:fixed;
-
-  bottom:30px;
-  left:50%;
-
-  transform:translateX(-50%);
-
-  background:#111009;
-
-  border:1px solid rgba(212,168,67,.3);
-
-  border-radius:999px;
-
-  padding:1rem 1.4rem;
-
-  z-index:6000;
-
-  opacity:0;
-  pointer-events:none;
-
-  transition:.4s;
-}
-
-.toast.show{
-  opacity:1;
-}
-
-/* =========================================================
-MOBILE
-========================================================= */
-
-@media(max-width:900px){
-
-  .ambiance-grid,
-  .contact-grid{
-    grid-template-columns:1fr;
-  }
-}
-
-@media(max-width:768px){
-
-  .nav-links{
-    display:none;
+  html, body {
+    background: var(--obsidian);
+    color: var(--stone-100);
+    font-family: var(--font-body);
+    font-weight: 300;
+    width: 100%;
+    margin: 0; padding: 0;
   }
 
-  .mobile-btn{
-    display:block;
+  /* ── REAL GSAP SCROLL-TRACK PINNING RIG ─────────────────────────── */
+  #scroll-track-rig {
+    position: relative;
+    width: 100%;
+    height: 700vh;
+    background: var(--obsidian);
+  }
+  #fixed-view-viewport {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100vh;
+    overflow: hidden;
+    z-index: 10;
   }
 
-  #nav{
-    padding:0 1rem;
+  .deck-section {
+    position: absolute; inset: 0; width: 100%; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    transform-origin: center center; will-change: transform, opacity;
+    opacity: 0; visibility: hidden; z-index: 10;
+    padding: 0 1.5rem;
   }
 
-  .deck-section{
-    padding:0 1rem;
+  /* ── CUSTOM MOUSE CURSOR ────────────────────────────────────────── */
+  #cursor-dot { position: fixed; z-index: 9999; pointer-events: none; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); transform: translate(-50%, -50%); transition: transform 0.1s; box-shadow: 0 0 12px 3px rgba(212,168,67,0.6); }
+  #cursor-ring { position: fixed; z-index: 9998; pointer-events: none; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(212,168,67,0.4); transform: translate(-50%, -50%); transition: width .35s, height .35s, border-color .35s; }
+  body:hover #cursor-ring { border-color: rgba(212,168,67,0.5); }
+  @media (max-width: 480px) { #cursor-dot, #cursor-ring { display: none; } }
+
+  /* ── NOISE OVERLAY ─────────────────────────────────────────────── */
+  #noise { position: fixed; inset: 0; z-index: 5; pointer-events: none; opacity: .03; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E"); background-size: 200px 200px; animation: noiseShift 8s steps(10) infinite; }
+  @keyframes noiseShift { 0%{background-position:0 0} 10%{background-position:-5% -10%} 20%{background-position:-15% 5%} 30%{background-position:7% -25%} 40%{background-position:-5% 25%} 50%{background-position:-15% 10%} 60%{background-position:15% 0%} 70%{background-position:0 15%} 80%{background-position:3% 35%} 90%{background-position:-18% 10%} 100%{background-position:0 0} }
+
+  /* ── NAV BAR (FIXED CRAMPING WORK) ───────────────────────────────── */
+  #nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 900; height: 64px; display: flex; align-items: center; padding: 0 clamp(1.25rem, 5vw, 3rem);
+    background: rgba(5,5,4,.6); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(212,168,67,.08); opacity: 0; transform: translateY(-10px);
+  }
+  .nav-logo { display: flex; align-items: center; gap: .65rem; text-decoration: none; margin-right: auto; }
+  .nav-logo-ring { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: none; }
+  .nav-logo-ring img { width: 100%; height: 100%; object-fit: contain; }
+  .nav-logo span { font-family: var(--font-display); font-size: .85rem; letter-spacing: .18em; text-transform: uppercase; color: var(--stone-100); font-weight: 400; }
+  
+  .nav-links { display: flex; gap: 2.2rem; align-items: center; }
+  .nav-link { font-size: .67rem; letter-spacing: .22em; text-transform: uppercase; color: var(--stone-300); text-decoration: none; cursor: pointer; }
+  .nav-link:hover { color: var(--gold); }
+  .nav-sound { margin-left: 1.8rem; background: none; border: 1px solid var(--stone-700); border-radius: 999px; padding: .35rem .9rem; display: flex; align-items: center; gap: .4rem; font-family: var(--font-body); font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--stone-500); }
+  .nav-sound svg { width: 12px; height: 12px; }
+
+  /* Hamburger Menu Button */
+  .nav-burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: 6px; cursor: pointer; z-index: 910; }
+  .burger-bar { display: block; height: 1px; background: var(--stone-300); transition: transform .35s, opacity .3s, width .3s; }
+  .burger-bar:nth-child(1) { width: 22px; }
+  .burger-bar:nth-child(2) { width: 16px; }
+  .burger-bar:nth-child(3) { width: 22px; }
+  .nav-burger.open .burger-bar:nth-child(1) { transform: rotate(45deg) translate(4px,4px); }
+  .nav-burger.open .burger-bar:nth-child(2) { opacity: 0; }
+  .nav-burger.open .burger-bar:nth-child(3) { transform: rotate(-45deg) translate(4px,-4px); }
+
+  /* Mobile Fullscreen Drawer overlay */
+  #mobile-menu {
+    position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 899; background: rgba(5,5,4,.98);
+    backdrop-filter: blur(20px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem;
+    opacity: 0; visibility: hidden; transition: opacity .4s, visibility .4s;
+  }
+  #mobile-menu.open { opacity: 1; visibility: visible; }
+  .mob-link { font-size: 1.25rem; letter-spacing: .25em; text-transform: uppercase; color: var(--stone-300); text-decoration: none; font-family: var(--font-display); }
+  .mob-link:hover { color: var(--gold); }
+
+  @media (max-width: 768px) {
+    .nav-links, .nav-sound { display: none; }
+    .nav-burger { display: flex; }
   }
 
-  .hero-eyebrow,
-  .eyebrow{
-    letter-spacing:.18em;
-  }
+  /* ── PANEL 0: SCROLL-BOUND INTRO CURTAIN ────────────────────────── */
+  #panel-curtain { opacity: 1; visibility: visible; z-index: 100; background: var(--obsidian); }
+  .curtain-center-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%; }
+  .curtain-logo-wrap { width: clamp(140px, 22vw, 240px); height: clamp(140px, 22vw, 240px); display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+  .curtain-logo-wrap img { width: 100%; height: 100%; object-fit: contain; }
+  .scroll-instruction { position: absolute; bottom: 3rem; left: 0; right: 0; font-size: .65rem; letter-spacing: .4em; text-transform: uppercase; color: var(--stone-500); text-align: center; width: 100%; }
 
-  .menu-grid{
-    grid-template-columns:1fr;
-  }
+  /* ── PANEL 1: HERO HOME ─────────────────────────────────────────── */
+  .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 65%, rgba(180,120,20,.1) 0%, transparent 70%), var(--obsidian); }
+  .hero-grid { position: absolute; inset: 0; pointer-events: none; opacity: .04; background-image: linear-gradient(rgba(212,168,67,.8) 1px, transparent 1px), linear-gradient(90deg, rgba(212,168,67,.8) 1px, transparent 1px); background-size: 80px 80px; }
+  .hero-content { text-align: center; max-width: 860px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .hero-eyebrow { font-size: .65rem; letter-spacing: .45em; text-transform: uppercase; color: rgba(212,168,67,.55); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 1rem; }
+  .eyebrow-line { flex: 0 0 40px; height: 1px; background: rgba(212,168,67,.35); }
+  .hero-brand-heading { display: flex; justify-content: center; align-items: center; margin-bottom: 1.6rem; width: 100%; }
+  .hero-brand-heading img { max-width: clamp(260px, 60vw, 500px); height: auto; object-fit: contain; margin: 0 auto; }
+  .hero-sub-line { font-family: var(--font-display); font-style: italic; font-size: clamp(.95rem, 2.5vw, 1.4rem); font-weight: 300; color: var(--stone-300); line-height: 1.8; }
+  .hero-sub-line em { color: rgba(212,168,67,.75); font-style: italic; }
+  .divider-line { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); margin: 2rem auto; }
+  
+  /* ── PANEL 2: PHILOSOPHY ────────────────────────────────────────── */
+  #panel-philosophy { text-align: center; flex-direction: column; }
+  .phil-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: var(--font-display); font-size: clamp(5rem,18vw,14rem); font-weight: 700; color: transparent; -webkit-text-stroke: 1px rgba(212,168,67,.04); white-space: nowrap; pointer-events: none; }
+  .section-eyebrow { font-size: .63rem; letter-spacing: .42em; text-transform: uppercase; color: rgba(212,168,67,.5); margin-bottom: 1.6rem; display: block; }
+  .phil-headline { font-family: var(--font-display); font-size: clamp(2.2rem,5vw,4rem); font-weight: 400; line-height: 1.15; color: var(--stone-100); }
+  .phil-headline em { color: var(--gold); font-style: italic; }
+  .verse-block { margin: 2.5rem 0 0; display: flex; flex-direction: column; align-items: center; }
+  .verse { font-family: var(--font-display); font-style: italic; font-size: clamp(1rem, 2.2vw, 1.35rem); font-weight: 300; line-height: 2; color: var(--stone-500); }
+  .verse.gold { color: rgba(212,168,67,.8); font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
+  .phil-divider { width: 1px; height: 40px; background: linear-gradient(to bottom, transparent, rgba(212,168,67,.25), transparent); margin: 0.5rem auto; }
+  .phil-body { margin-top: 2.5rem; font-size: clamp(.88rem, 1.8vw, 1rem); color: var(--stone-500); line-height: 2; max-width: 640px; }
 
-  .glass{
-    padding:1.2rem;
-  }
+  /* ── PANEL 3: MENU ──────────────────────────────────────────────── */
+  #panel-menu { flex-direction: column; justify-content: flex-start; padding-top: 90px; background: var(--obsidian-2); }
+  .menu-header { text-align: center; margin-bottom: 1rem; }
+  .section-title { font-family: var(--font-display); font-size: clamp(2rem,4.5vw,3.5rem); font-weight: 400; color: var(--stone-100); line-height: 1.1; }
+  .section-title em { color: var(--gold); font-style: italic; }
+  .menu-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin: .5rem 0 1.5rem; }
+  .menu-tab { padding: .45rem 1.2rem; border-radius: 999px; border: 1px solid var(--stone-800); background: none; font-family: var(--font-body); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--stone-500); cursor: pointer; }
+  .menu-tab.active { border-color: rgba(212,168,67,.55); color: var(--gold); background: rgba(212,168,67,.06); }
+  .menu-panel { display: none; width: 100%; max-width: 1100px; overflow-y: auto; max-height: calc(100vh - 270px); padding-bottom: 1.5rem; }
+  .menu-panel.active { display: block; }
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(245px, 1fr)); gap: 1.25rem; }
+  .menu-card { background: var(--obsidian-3); border-radius: 14px; border: 1px solid var(--stone-800); overflow: hidden; }
+  .card-img { height: 140px; background: #0e0c09; position: relative; }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; opacity: .75; }
+  .card-body { padding: 1rem; }
+  .card-name { font-family: var(--font-display); font-size: 1.1rem; color: var(--stone-100); margin-bottom: .3rem; }
+  .card-desc { font-size: .78rem; color: var(--stone-500); line-height: 1.6; }
+  .menu-future { margin-top: 1.5rem; text-align: center; width: 100%; }
+  .menu-future p { font-size: .65rem; letter-spacing: .3em; text-transform: uppercase; color: var(--stone-700); }
 
-  .hero-brand img{
-    width:92%;
-  }
+  /* ── PANEL 4: AMBIANCE ──────────────────────────────────────────── */
+  .split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; max-width: 1100px; width: 100%; }
+  @media (max-width: 860px) { .split-grid { grid-template-columns: 1fr; padding-top: 40px; } }
+  .ambiance-img-wrap { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 4/3; border: 1px solid var(--stone-800); }
+  .ambiance-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: .7; }
+  .year-badge { position: absolute; bottom: 20px; right: 20px; background: rgba(5,5,4,0.92); border: 1px solid var(--gold); border-radius: 10px; padding: .5rem .8rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  .year-badge small { font-size: .55rem; letter-spacing: .15em; text-transform: uppercase; color: var(--stone-500); display: block; }
+  .year-badge strong { font-family: var(--font-display); font-size: 1.5rem; color: var(--gold); display: block; line-height: 1; }
+  
+  .detail-row { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--stone-800); }
+  .detail-row:last-of-type { border-bottom: none; }
+  .detail-icon { flex: 0 0 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(212,168,67,.22); display: flex; align-items: center; justify-content: center; }
+  .detail-icon svg { width: 16px; height: 16px; color: rgba(212,168,67,.6); stroke: currentColor; fill: none; }
+  .detail-label { font-size: .6rem; letter-spacing: .25em; text-transform: uppercase; color: var(--stone-500); margin-bottom: .3rem; }
+  .detail-value { color: var(--stone-100); font-size: .95rem; font-weight: 300; }
+  .detail-value small { display: block; font-size: .78rem; color: var(--stone-500); margin-top: .15rem; }
+  .detail-value .gold-time { color: var(--gold); font-family: var(--font-display); font-size: 1.25rem; }
+  .live-badge { margin-top: 1.2rem; padding: 1rem; background: var(--obsidian-3); border: 1px solid rgba(212,168,67,.15); border-radius: 12px; }
+  .live-badge p { font-size: .8rem; color: var(--stone-500); line-height: 1.6; }
 
-  .hero-sub{
-    font-size:1rem;
-    line-height:1.6;
+  /* ── PANEL 5: CONTACT & QUERY (ELEGANT ALERT NOTIFICATION WORK) ──── */
+  #panel-contact { background: var(--obsidian-2); flex-direction: column; justify-content: flex-start; padding-top: 90px; }
+  .contact-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 2rem; max-width: 1100px; width: 100%; }
+  @media (max-width: 860px) { .contact-grid { grid-template-columns: 1fr; max-height: calc(100vh - 240px); overflow-y: auto; } }
+  .glass-card { background: rgba(13,12,10,.8); border: 1px solid var(--stone-800); border-radius: 18px; padding: 2rem; position: relative; }
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; font-size: .6rem; letter-spacing: .28em; text-transform: uppercase; color: var(--stone-500); margin-bottom: .4rem; }
+  .form-group input, .form-group textarea { width: 100%; background: rgba(8,8,7,.9); border: 1px solid var(--stone-800); border-radius: 8px; padding: .75rem 1rem; font-family: var(--font-body); font-size: .85rem; color: var(--stone-100); outline: none; appearance: none; -webkit-appearance: none; }
+  .form-submit { width: 100%; padding: .85rem; border-radius: 8px; border: 1px solid rgba(212,168,67,.4); background: rgba(212,168,67,.07); font-family: var(--font-body); font-size: .65rem; letter-spacing: .28em; text-transform: uppercase; color: rgba(212,168,67,.85); display: flex; align-items: center; justify-content: center; gap: .6rem; border-style: solid; cursor: pointer; }
+  
+  /* Minimal Soft Alert Toast design instead of giant stuck advertisement checkmark */
+  .soft-toast-success {
+    position: absolute; inset: 0; background: rgba(10,9,8,0.96); border-radius: 18px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: .75rem; opacity: 0; visibility: hidden; z-index: 50; transition: opacity 0.4s, visibility 0.4s;
+    padding: 2rem; text-align: center;
   }
-}
+  .soft-toast-success.active { opacity: 1; visibility: visible; }
+  .toast-icon { color: var(--gold); font-size: 1.5rem; }
+  .soft-toast-success h3 { font-family: var(--font-display); font-size: 1.35rem; color: var(--stone-100); font-weight: 400; }
+  .soft-toast-success p { font-size: .8rem; color: var(--stone-500); }
 
+  .social-card { background: rgba(13,12,10,.6); border: 1px solid var(--stone-800); border-radius: 14px; padding: 1.5rem; }
+  .social-card-label { font-size: .6rem; letter-spacing: .3em; text-transform: uppercase; color: var(--stone-500); margin-bottom: 1rem; display: block; }
+  .social-row { display: flex; align-items: center; gap: .75rem; padding: .5rem 0; font-size: .85rem; }
+  .social-handle { color: var(--stone-300); text-decoration: none; }
+  .social-handle:hover { color: var(--gold); }
+  .map-card { background: rgba(13,12,10,.6); border: 1px solid var(--stone-800); border-radius: 14px; overflow: hidden; }
+  .map-inner { aspect-ratio: 16/10; background: var(--obsidian-3); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem; }
+  .map-link { font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(212,168,67,.5); text-decoration: none; border: 1px solid rgba(212,168,67,.2); border-radius: 999px; padding: .3rem .9rem; }
+
+  /* ── BOTTOM MARQUEE TRACK STRIP ──────────────────────────────────── */
+  .marquee-wrap { position: absolute; bottom: 0; left: 0; right: 0; overflow: hidden; border-top: 1px solid var(--stone-800); padding: .7rem 0; background: var(--obsidian-2); z-index: 20; }
+  .marquee-track { display: flex; gap: 2.5rem; width: max-content; animation: marqueeScroll 25s linear infinite; }
+  @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .marquee-item { display: flex; align-items: center; gap: .8rem; white-space: nowrap; font-size: .65rem; letter-spacing: .25em; text-transform: uppercase; color: var(--stone-700); }
+  .marquee-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(212,168,67,.4); flex-shrink: 0; }
 </style>
-
 </head>
-
 <body>
 
-<div id="noise"></div>
+<div id="noise" aria-hidden="true"></div>
+<div id="cursor-dot" aria-hidden="true"></div>
+<div id="cursor-ring" aria-hidden="true"></div>
 
-<div id="cursor-dot"></div>
-<div id="cursor-ring"></div>
-
-<!-- =========================================================
-MOBILE MENU
-========================================================= -->
-
-<div class="mobile-menu" id="mobileMenu">
-
-<button class="mobile-close" id="closeMenu">
-×
-</button>
-
-<a href="#" onclick="scrollToPanel(1)">Home</a>
-<a href="#" onclick="scrollToPanel(2)">Story</a>
-<a href="#" onclick="scrollToPanel(3)">Menu</a>
-<a href="#" onclick="scrollToPanel(4)">Location</a>
-<a href="#" onclick="scrollToPanel(5)">Query</a>
-
-</div>
-
-<!-- =========================================================
-SCROLL SYSTEM
-========================================================= -->
-
+<!-- ══ PERFORMANCE RIG: FLUID TRACK SCROLLER ══════════════════════════ -->
 <div id="scroll-track-rig">
+  <div id="fixed-view-viewport">
 
-<div id="fixed-view-viewport">
+    <!-- GLOBAL NAVBAR -->
+    <header>
+      <nav id="nav">
+        <a href="#" onclick="scrollToPanel(0); return false;" class="nav-logo">
+          <div class="nav-logo-ring"><img src="assets/logo.png" alt="Logo"></div>
+          <span>Kaadapakshi</span>
+        </a>
+        <div class="nav-links">
+          <a onclick="scrollToPanel(1)" class="nav-link">Home</a>
+          <a onclick="scrollToPanel(2)" class="nav-link">Story</a>
+          <a onclick="scrollToPanel(3)" class="nav-link">Menu</a>
+          <a onclick="scrollToPanel(4)" class="nav-link">Location</a>
+          <a onclick="scrollToPanel(5)" class="nav-link">Query</a>
+        </div>
+        <button class="nav-sound" id="soundBtn">
+          <svg id="soundIcon" viewBox="0 0 20 20"><path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.784L4.82 13.5H3a1 1 0 01-1-1v-3a1 1 0 011-1h1.82l3.563-3.284a1 1 0 011-.076z"/></svg>
+          <span id="soundLabel">Ambience</span>
+        </button>
+        <!-- Hamburger button for tight viewports -->
+        <button class="nav-burger" id="burgerBtn" aria-label="Open menu">
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+        </button>
+      </nav>
+      <!-- Mobile drawer layer layout -->
+      <div id="mobile-menu">
+        <a onclick="closeMobileMenu(); scrollToPanel(1);" class="mob-link">Home</a>
+        <a onclick="closeMobileMenu(); scrollToPanel(2);" class="mob-link">Story</a>
+        <a onclick="closeMobileMenu(); scrollToPanel(3);" class="mob-link">Menu</a>
+        <a onclick="closeMobileMenu(); scrollToPanel(4);" class="mob-link">Location</a>
+        <a onclick="closeMobileMenu(); scrollToPanel(5);" class="mob-link">Query</a>
+      </div>
+    </header>
 
-<!-- =========================================================
-NAVBAR
-========================================================= -->
+    <!-- PANEL 0: SCROLL-BOUND LOADER CURTAIN -->
+    <section class="deck-section" id="panel-curtain">
+      <div class="curtain-center-panel" id="curtainPanel">
+        <div class="curtain-logo-container curtain-logo-wrap">
+          <img src="assets/logo.png" alt="Kaadapakshi Logo">
+        </div>
+      </div>
+      <div class="scroll-instruction">↓ Scroll / Swipe Down to Explore</div>
+    </section>
 
-<nav id="nav">
+    <!-- PANEL 1: HERO SITE INDEX -->
+    <section class="deck-section" id="panel-hero">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div id="hero-parallax-text" aria-hidden="true">
+        <span class="bg-large-word bg-word-1">MANNA</span>
+        <span class="bg-large-word bg-word-2">QUAIL</span>
+      </div>
+      <div class="hero-content" id="heroContentBlock">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-line" aria-hidden="true"></span>
+          Est. Kanjirappally · Kerala
+          <span class="eyebrow-line" aria-hidden="true"></span>
+        </div>
+        <h1 class="hero-brand-heading">
+          <img src="assets/kaadapakshi-lettering.png" alt="Kaadapakshi">
+        </h1>
+        <p class="hero-sub-line">
+          Manna was for survival. The Quail was a wish. <br>
+          <em>Experience the luxury of your deepest desires.</em>
+        </p>
+        <div class="divider-line" aria-hidden="true"></div>
+      </div>
+    </section>
 
-<div class="nav-left">
+    <!-- PANEL 2: PHILOSOPHY STORY -->
+    <section class="deck-section" id="panel-philosophy">
+      <div class="phil-bg-text" aria-hidden="true">KAADA</div>
+      <span class="section-eyebrow">Our Philosophy</span>
+      <h2 class="phil-headline">The Legend of the<br><em>Forest Quail</em></h2>
+      <div class="verse-block">
+        <p class="verse">"In the wilderness, God sent Manna — the bare minimum for survival."</p>
+        <div class="phil-divider" aria-hidden="true"></div>
+        <p class="verse">"But the people desired more. They craved the Quail."</p>
+        <div class="phil-divider" aria-hidden="true"></div>
+        <p class="verse gold">"The Quail was not sustenance. It was a wish. A luxury. A desire fulfilled."</p>
+      </div>
+      <p class="phil-body">
+        Born from the mist-covered hills of Kanjirappally, Kaadapakshi honours the quail — Kerala's most storied forest bird. We channel its wild, untamed essence into cuisine that transcends the ordinary.
+      </p>
+    </section>
 
-<div class="logo-ring">
-<img src="assets/logo.png">
+    <!-- PANEL 3: DYNAMIC MENU SELECTION -->
+    <section class="deck-section" id="panel-menu">
+      <header class="menu-header">
+        <span class="section-eyebrow">The Desires</span>
+        <h2 class="section-title">The Menu</h2>
+      </header>
+      <div class="menu-tabs" role="tablist">
+        <button class="menu-tab active" data-tab="signature">Signature Delicacies</button>
+        <button class="menu-tab" data-tab="main">Main Event</button>
+        <button class="menu-tab" data-tab="staples">Cafe Staples</button>
+        <button class="menu-tab" data-tab="drinks">Refreshments</button>
+      </div>
+
+      <div class="menu-panel active" id="tab-signature"><div class="menu-grid" id="grid-signature"></div></div>
+      <div class="menu-panel" id="tab-main"><div class="menu-grid" id="grid-main"></div></div>
+      <div class="menu-panel" id="tab-staples"><div class="menu-grid" id="grid-staples"></div></div>
+      <div class="menu-panel" id="tab-drinks"><div class="menu-grid" id="grid-drinks"></div></div>
+      <div class="menu-future"><p>✦   Signature Biriyani &amp; Specials — Coming Soon   ✦</p></div>
+    </section>
+
+    <!-- PANEL 4: ENVIRONMENT AMBIANCE -->
+    <section class="deck-section" id="panel-ambiance">
+      <div class="split-grid">
+        <div class="ambiance-img-wrap">
+          <img src="assets/cafe-ambiance.png" alt="Cafe Ambiance" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="ambiance-img-placeholder" style="display:none"><p>🌿 Cafe Ambiance Photo</p></div>
+          <div class="corner-tl"></div><div class="corner-br"></div>
+          <div class="year-badge"><small>Est.</small><strong>2025</strong></div>
+        </div>
+        <div class="ambiance-details">
+          <span class="section-eyebrow" style="text-align:left;">Find Us</span>
+          <h2 class="section-title" style="text-align:left; margin-bottom:1.5rem;">Ambiance &amp; <em>Details</em></h2>
+          <div class="detail-row">
+            <div class="detail-icon"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><p class="detail-label">Location</p><div class="detail-value">Parent Branch: Kalaketty <small>Kanjirappally, Kottayam, Kerala</small></div></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-icon"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg></div>
+            <div><p class="detail-label">Current Hours</p><div class="detail-value"><span class="gold-time">3:00 PM – 10:00 PM</span></div></div>
+          </div>
+          <div class="live-badge"><p>Our kitchen operates with fresh, locally sourced produce from the Kanjirappally hills.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 5: DYNAMIC FORM SUBMIT CARD -->
+    <section class="deck-section" id="panel-contact">
+      <header style="text-align:center; margin-bottom:1.5rem;">
+        <span class="section-eyebrow">Reach Out</span>
+        <h2 class="section-title">Queries &amp; <em>Conversations</em></h2>
+      </header>
+      <div class="contact-grid">
+        <div class="glass-card">
+          <form action="https://formspree.io/f/xaqkakwz" method="POST" id="contactForm">
+            <div class="form-row">
+              <div class="form-group"><label for="fname">Full Name</label><input type="text" id="fname" name="name" required/></div>
+              <div class="form-group"><label for="femail">Email</label><input type="email" id="femail" name="email" required/></div>
+            </div>
+            <div class="form-group"><label for="fmsg">Message</label><textarea id="fmsg" name="message" rows="3" required></textarea></div>
+            <button type="submit" class="form-submit">Send Message</button>
+          </form>
+          
+          <!-- Redesigned soft toast alert element container -->
+          <div class="soft-toast-success" id="formSuccess" aria-live="polite">
+            <div class="toast-icon">✦</div>
+            <h3>Message received.</h3>
+            <p>We'll be in touch with you shortly.</p>
+          </div>
+        </div>
+        <div class="contact-side">
+          <div class="social-card">
+            <span class="social-card-label">Connect With Us</span>
+            <div class="social-row">📸   <a href="https://instagram.com/kaadapakshicafe" target="_blank" class="social-handle">@kaadapakshicafe</a></div>
+            <div class="social-row">💬   <a href="https://wa.me/919447416829" target="_blank" class="social-handle">+91 9447416829</a></div>
+          </div>
+          <div class="map-card"><div class="map-inner"><a href="https://maps.google.com" target="_blank" class="map-link">Open in Maps</a></div></div>
+        </div>
+      </div>
+      
+      <div class="marquee-wrap" aria-hidden="true">
+        <div class="marquee-track" id="marqueeTrack"></div>
+      </div>
+    </section>
+
+  </div>
 </div>
 
-<div class="logo-text">
-Kaadapakshi
-</div>
-
-</div>
-
-<div class="nav-links">
-
-<a class="nav-link" onclick="scrollToPanel(1)">
-Home
-</a>
-
-<a class="nav-link" onclick="scrollToPanel(2)">
-Story
-</a>
-
-<a class="nav-link" onclick="scrollToPanel(3)">
-Menu
-</a>
-
-<a class="nav-link" onclick="scrollToPanel(4)">
-Location
-</a>
-
-<a class="nav-link" onclick="scrollToPanel(5)">
-Query
-</a>
-
-</div>
-
-<button class="mobile-btn" id="openMenu">
-☰
-</button>
-
-</nav>
-
-<!-- =========================================================
-PANEL 0
-========================================================= -->
-
-<section class="deck-section" id="panel-curtain">
-
-<div class="curtain-logo-wrap">
-<img src="assets/logo.png">
-</div>
-
-<div class="scroll-note">
-↓ Scroll / Swipe Down
-</div>
-
-</section>
-
-<!-- =========================================================
-PANEL 1 HERO
-========================================================= -->
-
-<section class="deck-section" id="panel-hero">
-
-<div class="hero-bg"></div>
-<div class="hero-grid"></div>
-
-<div class="hero-content">
-
-<div class="hero-eyebrow">
-
-<div class="hero-line"></div>
-
-Est. Kanjirappally · Kerala
-
-<div class="hero-line"></div>
-
-</div>
-
-<div class="hero-brand">
-<img src="assets/kaadapakshi-lettering.png">
-</div>
-
-<p class="hero-sub">
-Manna was for survival. The Quail was a wish.<br>
-<em>Experience the luxury of your deepest desires.</em>
-</p>
-
-</div>
-
-</section>
-
-<!-- =========================================================
-PANEL 2 STORY
-========================================================= -->
-
-<section class="deck-section" id="panel-philosophy">
-
-<div class="phil-bg">
-KAADA
-</div>
-
-<div class="panel-inner">
-
-<div class="eyebrow">
-Our Philosophy
-</div>
-
-<h2 class="section-title">
-The Legend of the <br>
-<em>Forest Quail</em>
-</h2>
-
-<div class="verse-wrap">
-
-<p class="verse">
-“In the wilderness, God sent Manna — the bare minimum for survival.”
-</p>
-
-<br>
-
-<p class="verse">
-“But the people desired more. They craved the Quail.”
-</p>
-
-<br>
-
-<p class="verse gold">
-“The Quail was not sustenance. It was a wish. A luxury.”
-</p>
-
-</div>
-
-<p class="story-body">
-
-Born from the mist-covered hills of Kanjirappally,
-Kaadapakshi honours Kerala’s most storied forest bird —
-channeling its untamed essence into cuisine
-that transcends the ordinary.
-
-</p>
-
-</div>
-
-</section>
-
-<!-- =========================================================
-PANEL 3 MENU
-========================================================= -->
-
-<section class="deck-section" id="panel-menu">
-
-<div class="menu-wrap">
-
-<div class="eyebrow" style="text-align:center;">
-The Desires
-</div>
-
-<h2 class="section-title" style="text-align:center;">
-The <em>Menu</em>
-</h2>
-
-<div class="tabs">
-
-<button class="tab active">
-Signature
-</button>
-
-<button class="tab">
-Main Event
-</button>
-
-<button class="tab">
-Cafe Staples
-</button>
-
-<button class="tab">
-Refreshments
-</button>
-
-</div>
-
-<div class="menu-grid">
-
-<div class="card">
-
-<div class="card-img">
-<img src="assets/kaada-varaval.png">
-</div>
-
-<div class="card-body">
-<h3 class="card-title">Kaada Varaval</h3>
-<p class="card-desc">
-Crisp-fried quail in a masala of ancient Kerala spice lore.
-</p>
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="card-img">
-<img src="assets/kaada-vilayichathu.png">
-</div>
-
-<div class="card-body">
-<h3 class="card-title">Kaada Vilayichathu</h3>
-<p class="card-desc">
-Slow-cooked quail braised in rich aromatic herbs.
-</p>
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="card-img">
-<img src="assets/zinger-burger.png">
-</div>
-
-<div class="card-body">
-<h3 class="card-title">Zinger Burger</h3>
-<p class="card-desc">
-Double-fried crispy chicken burger with house sauce.
-</p>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- =========================================================
-PANEL 4 AMBIANCE
-========================================================= -->
-
-<section class="deck-section" id="panel-ambiance">
-
-<div class="ambiance-grid">
-
-<div class="ambiance-img">
-<img src="assets/cafe-ambiance.png">
-</div>
-
-<div>
-
-<div class="eyebrow">
-Find Us
-</div>
-
-<h2 class="section-title">
-Ambiance & <em>Details</em>
-</h2>
-
-<div class="detail">
-
-<div class="detail-label">
-Location
-</div>
-
-<div class="detail-value">
-Parent Branch: Kalaketty <br>
-Kanjirappally, Kottayam, Kerala
-</div>
-
-</div>
-
-<div class="detail">
-
-<div class="detail-label">
-Current Hours
-</div>
-
-<div class="detail-value">
-3:00 PM – 10:00 PM
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- =========================================================
-PANEL 5 CONTACT
-========================================================= -->
-
-<section class="deck-section" id="panel-contact">
-
-<div class="contact-grid">
-
-<div class="glass">
-
-<div class="eyebrow">
-Reach Out
-</div>
-
-<h2 class="section-title" style="margin-bottom:2rem;">
-Queries & <em>Conversations</em>
-</h2>
-
-<form id="contactForm"
-action="https://formspree.io/f/xaqkakwz"
-method="POST">
-
-<div class="form-group">
-
-<label>
-Full Name
-</label>
-
-<input type="text" required>
-
-</div>
-
-<div class="form-group">
-
-<label>
-Email
-</label>
-
-<input type="email" required>
-
-</div>
-
-<div class="form-group">
-
-<label>
-Message
-</label>
-
-<textarea rows="5" required></textarea>
-
-</div>
-
-<button class="submit-btn" type="submit">
-Send Message
-</button>
-
-</form>
-
-</div>
-
-<div>
-
-<div class="glass social">
-
-<div class="social-title">
-Connect With Us
-</div>
-
-<div class="social-row">
-📸 @kaadapakshicafe
-</div>
-
-<div class="social-row">
-💬 +91 9447416829
-</div>
-
-</div>
-
-<div class="glass map">
-
-<a href="https://maps.google.com"
-target="_blank"
-class="map-link">
-
-Open In Maps
-
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-</div>
-</div>
-
-<!-- =========================================================
-TOAST
-========================================================= -->
-
-<div class="toast" id="toast">
-Message Sent Successfully
-</div>
-
-<!-- =========================================================
-SCRIPT
-========================================================= -->
-
+<!-- ══ SCRIPT CONFIGURATION CODES ══════════════════════════════════════ -->
 <script>
+const MENU_DATA = {
+  signature: [
+    { name: "Kaada Varaval", desc: "Crisp-fried quail in a masala of ancient Kerala spice lore.", img: "assets/kaada-varaval.png", emoji: "🍗" },
+    { name: "Kaada Vilayichathu", desc: "Slow-cooked quail braised in rich, dark aromatic herbs.", img: "assets/kaada-vilayichathu.png", emoji: "🫕" },
+    { name: "Kaadamutta Fry", desc: "Pan-seared quail eggs seasoned with fire and cumin.", img: "assets/kaadamutta-fry.png", emoji: "🥚" }
+  ],
+  main: [
+    { name: "Chilly Chicken", desc: "Wok-tossed chicken in a fiery Sichuan-Kerala fusion mix.", img: "assets/chilly-chicken.png", emoji: "🌶" },
+    { name: "Zinger Burger", desc: "Double-fried crispy chicken burger with house sauce.", img: "assets/zinger-burger.png", emoji: "🍔" },
+    { name: "Beef Cutlet", desc: "Spiced minced beef coated in golden breadcrumbs.", img: "assets/beef-cutlet.png", emoji: "🥩" },
+    { name: "Quesadilla", desc: "Pressed flour tortilla loaded with melted premium cheese.", img: "assets/quesadilla.png", emoji: "🫓" }
+  ],
+  staples: [
+    { name: "Chicken Roll", desc: "Soft paratha rolled tightly with well-spiced chicken strips.", img: "assets/chicken-roll.png", emoji: "🌯" },
+    { name: "Ila Ada", desc: "Steamed sweet rice parcels wrapped in warm banana leaf.", img: "assets/ila-ada.png", emoji: "🍃" },
+    { name: "Fried Bread Sandwich", desc: "Deep-golden pan-fried bread with a hearty filling.", img: "assets/fried-bread-sandwich.png", emoji: "🥪" },
+    { name: "Cheese Bun", desc: "Pillowy soft-baked buns with a molten cheese centre.", img: "assets/cheese-bun.png", emoji: "🧀" }
+  ],
+  drinks: [
+    { name: "Juices & Shakes", desc: "Fresh-pressed seasonal fruits and hand-blended options.", img: "assets/juices-shakes.png", emoji: "🥤" }
+  ]
+};
 
-/* =========================================================
-CURSOR
-========================================================= */
-
-const dot = document.getElementById("cursor-dot");
-const ring = document.getElementById("cursor-ring");
-
-let mouseX = 0;
-let mouseY = 0;
-
-let ringX = 0;
-let ringY = 0;
-
-window.addEventListener("mousemove",(e)=>{
-
-mouseX = e.clientX;
-mouseY = e.clientY;
-
-});
-
-function animateCursor(){
-
-dot.style.left = mouseX + "px";
-dot.style.top = mouseY + "px";
-
-ringX += (mouseX - ringX) * 0.12;
-ringY += (mouseY - ringY) * 0.12;
-
-ring.style.left = ringX + "px";
-ring.style.top = ringY + "px";
-
-requestAnimationFrame(animateCursor);
-
+function buildMenu() {
+  Object.entries(MENU_DATA).forEach(([cat, items]) => {
+    const grid = document.getElementById(`grid-${cat}`);
+    if (!grid) return;
+    items.forEach(item => {
+      grid.insertAdjacentHTML('beforeend', `
+        <article class="menu-card">
+          <div class="card-img">
+            <img src="${item.img}" alt="${item.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+            <div class="card-img-placeholder" style="display:none"><span>${item.emoji}</span></div>
+            <div class="card-img-fade"></div>
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">${item.name}</h3>
+            <p class="card-desc">${item.desc}</p>
+          </div>
+        </article>`);
+    });
+  });
 }
 
+function buildMarquee() {
+  const items = ["Kaada Varaval","Kaada Vilayichathu","Kaadamutta Fry","Chilly Chicken","Zinger Burger","Beef Cutlet"];
+  const track = document.getElementById('marqueeTrack');
+  if(track) {
+    track.innerHTML = [...items, ...items].map(i => `<span class="marquee-item"><span class="marquee-dot"></span>${i}</span>`).join('');
+  }
+}
+
+/* ── CURSOR INTERACTION ─────────────────────────────────────────── */
+const dot = document.getElementById('cursor-dot'); const ring = document.getElementById('cursor-ring');
+let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+function animateCursor() {
+  if(dot && ring) {
+    dot.style.left = mouseX + 'px'; dot.style.top = mouseY + 'px';
+    ringX += (mouseX - ringX) * 0.14; ringY += (mouseY - ringY) * 0.14;
+    ring.style.left = ringX + 'px'; ring.style.top = ringY + 'px';
+  }
+  requestAnimationFrame(animateCursor);
+}
 animateCursor();
 
-/* =========================================================
-MOBILE MENU
-========================================================= */
-
-const mobileMenu = document.getElementById("mobileMenu");
-
-document.getElementById("openMenu").onclick = ()=>{
-
-mobileMenu.classList.add("active");
-
-};
-
-document.getElementById("closeMenu").onclick = ()=>{
-
-mobileMenu.classList.remove("active");
-
-};
-
-document.querySelectorAll(".mobile-menu a").forEach(link=>{
-
-link.addEventListener("click",()=>{
-
-mobileMenu.classList.remove("active");
-
+/* ── TAB SELECTORS ──────────────────────────────────────────────── */
+document.querySelectorAll('.menu-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    btn.parentElement.querySelectorAll('.menu-tab').forEach(b => b.classList.remove('active'));
+    btn.parentElement.parentElement.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active'); document.getElementById(`tab-${tab}`).classList.add('active');
+  });
 });
 
-});
+/* ── MOBILE MENU ACCORDION OVERLAYS ──────────────────────────────── */
+const burgerBtn = document.getElementById('burgerBtn');
+const mobileMenu = document.getElementById('mobile-menu');
 
-/* =========================================================
-SCROLL TO PANEL
-========================================================= */
-
-function scrollToPanel(index){
-
-const totalHeight =
-document.getElementById("scroll-track-rig").clientHeight;
-
-const targetY =
-(totalHeight / 7) * index;
-
-window.scrollTo({
-top:targetY,
-behavior:"smooth"
-});
-
+if(burgerBtn && mobileMenu) {
+  burgerBtn.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    burgerBtn.classList.toggle('open', isOpen);
+  });
 }
 
-/* =========================================================
-GSAP ENGINE
-========================================================= */
-
-gsap.registerPlugin(ScrollTrigger);
-
-const isMobile = window.innerWidth < 768;
-
-const tl = gsap.timeline({
-
-scrollTrigger:{
-trigger:"#scroll-track-rig",
-start:"top top",
-end:"bottom bottom",
-scrub:1.2
+function closeMobileMenu() {
+  if(mobileMenu && burgerBtn) {
+    mobileMenu.classList.remove('open');
+    burgerBtn.classList.remove('open');
+  }
 }
 
+/* ── ROCKSTAR SCROLL-BOUND ENGINE RIG ────────────────────────────── */
+function initPinningMorphEngine() {
+  gsap.registerPlugin(ScrollTrigger);
+  
+  const masterTimeline = gsap.timeline({
+    scrollTrigger: {
+      trigger: "#scroll-track-rig",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 1.1,
+      invalidateOnRefresh: true
+    }
+  });
+
+  const p0 = "#panel-curtain", p1 = "#panel-hero", p2 = "#panel-philosophy", p3 = "#panel-menu", p4 = "#panel-ambiance", p5 = "#panel-contact";
+
+  masterTimeline
+    /* STEP 0: THE SCROLL-BOUND INTRO LOGO ZOOM TRACK */
+    .set(p0, { autoAlpha: 1, scale: 1, opacity: 1 })
+    .to("#panel-curtain .curtain-center-panel", { scale: 35, opacity: 0, duration: 1.5, ease: "power2.in" })
+    .to(p0, { autoAlpha: 0, duration: 0.1 })
+
+    /* STEP 1: HOME PANEL BRAND LETTERS REVEAL */
+    .set(p1, { autoAlpha: 1, scale: 1 }, "-=0.1")
+    .fromTo("#heroContentBlock", { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.8 }, "-=0.2")
+    .to("#nav", { opacity: 1, y: 0, duration: 0.4 }, "-=0.5")
+    .to(p1, { scale: 2.2, opacity: 0, autoAlpha: 0, duration: 1.5, ease: "power1.inOut" })
+
+    /* STEP 2: PHILOSOPHY STORY PANEL MORPH */
+    .set(p2, { autoAlpha: 1, scale: 0.5 }, "-=0.2")
+    .to(p2, { scale: 1, opacity: 1, duration: 1.2, ease: "power1.out" })
+    .fromTo("#panel-philosophy .phil-headline, #panel-philosophy .verse", { opacity: 0, y: 30 }, { opacity: 1, y: 0, stagger: 0.08, duration: 1 }, "-=0.8")
+    .to(p2, { scale: 1.8, opacity: 0, autoAlpha: 0, duration: 1.5, ease: "power2.in" })
+
+    /* STEP 3: FOOD MENU SHOWCASE GRID EXPANSION */
+    .set(p3, { autoAlpha: 1, scale: 0.7 }, "-=0.2")
+    .to(p3, { scale: 1, opacity: 1, duration: 1.2, ease: "power1.out" })
+    .fromTo("#panel-menu .menu-card", { opacity: 0, y: 40 }, { opacity: 1, y: 0, stagger: 0.05, duration: 1 }, "-=0.6")
+    .to(p3, { scale: 0.4, opacity: 0, autoAlpha: 0, duration: 1.5, ease: "power1.inOut" })
+
+    /* STEP 4: PROPERTY DETAILS AND LOCATION GRAPH */
+    .set(p4, { autoAlpha: 1, scale: 1.3 }, "-=0.2")
+    .to(p4, { scale: 1, opacity: 1, duration: 1.2, ease: "power2.out" })
+    .fromTo("#panel-ambiance .split-grid", { opacity: 0 }, { opacity: 1, duration: 0.8 }, "-=0.4")
+    .to(p4, { scale: 2.5, opacity: 0, autoAlpha: 0, duration: 1.5, ease: "power2.in" })
+
+    /* STEP 5: CONTACT CARD PIPELINE LOCK DOWN */
+    .set(p5, { autoAlpha: 1, opacity: 1 })
+    .fromTo("#panel-contact .glass-card, #panel-contact .contact-side", { opacity: 0, y: 40 }, { opacity: 1, y: 0, stagger: 0.1, duration: 1 })
+    .to(p5, { opacity: 1, duration: 1 });
+}
+
+function scrollToPanel(panelIndex) {
+  const scrollTotalHeight = document.getElementById("scroll-track-rig").clientHeight;
+  const targetY = (scrollTotalHeight / 7) * panelIndex;
+  window.scrollTo({
+    top: targetY,
+    behavior: "smooth"
+  });
+}
+
+/* 2.5-SECOND CRUNCH SUCCESS TOAST CONTROLLER */
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+  e.preventDefault(); // Intercept raw reload behavior
+  const form = this;
+  const successToast = document.getElementById('formSuccess');
+  
+  // Submit over the wire asynchronous pipeline hook
+  fetch(form.action, {
+    method: form.method,
+    body: new FormData(form),
+    headers: { 'Accept': 'application/json' }
+  }).then(response => {
+    if (response.ok) {
+      // Fade in the clean, luxury soft overlay text card
+      successToast.classList.add('active');
+      form.reset(); // Wipe values
+      
+      // Keep visible for exactly 2.5 seconds, then cleanly vanish out of sight
+      setTimeout(() => {
+        successToast.classList.remove('active');
+      }, 2500);
+    }
+  });
 });
 
-const p0 = "#panel-curtain";
-const p1 = "#panel-hero";
-const p2 = "#panel-philosophy";
-const p3 = "#panel-menu";
-const p4 = "#panel-ambiance";
-const p5 = "#panel-contact";
-
-/* INTRO */
-
-tl.set(p0,{
-autoAlpha:1
-})
-
-.to(".curtain-logo-wrap",{
-
-scale:isMobile ? 18 : 34,
-opacity:0,
-duration:1.4,
-ease:"power2.in"
-
-})
-
-.to(p0,{
-autoAlpha:0,
-duration:.1
+/* CORE ENGINE BOOT IGNITION */
+window.addEventListener('DOMContentLoaded', () => {
+  buildMenu();
+  buildMarquee();
+  initPinningMorphEngine();
 });
-
-/* HERO */
-
-tl.set(p1,{
-autoAlpha:1,
-scale:1
-})
-
-.fromTo(".hero-content",{
-
-opacity:0,
-scale:.92
-
-},{
-
-opacity:1,
-scale:1,
-duration:.8
-
-},"-=.2")
-
-.to("#nav",{
-
-opacity:1,
-duration:.5
-
-},"-=.5")
-
-.to(p1,{
-
-scale:isMobile ? 1.18 : 2.1,
-opacity:0,
-autoAlpha:0,
-duration:1.5,
-ease:"power1.inOut"
-
-});
-
-/* STORY */
-
-tl.set(p2,{
-
-autoAlpha:1,
-scale:.7
-
-},"-=.2")
-
-.to(p2,{
-
-scale:1,
-opacity:1,
-duration:1.1
-
-})
-
-.fromTo("#panel-philosophy .section-title, .verse, .story-body",{
-
-opacity:0,
-y:30
-
-},{
-
-opacity:1,
-y:0,
-stagger:.08,
-duration:1
-
-},"-=.8")
-
-.to(p2,{
-
-scale:isMobile ? 1.08 : 1.2,
-opacity:0,
-autoAlpha:0,
-duration:1.2
-
-});
-
-/* MENU */
-
-tl.set(p3,{
-
-autoAlpha:1,
-y:60,
-filter:"blur(10px)"
-
-},"-=.2")
-
-.to(p3,{
-
-y:0,
-filter:"blur(0px)",
-opacity:1,
-duration:1.1
-
-})
-
-.fromTo(".card",{
-
-opacity:0,
-y:30
-
-},{
-
-opacity:1,
-y:0,
-stagger:.06,
-duration:.8
-
-},"-=.6")
-
-.to(p3,{
-
-y:-50,
-filter:"blur(10px)",
-opacity:0,
-autoAlpha:0,
-duration:1.2
-
-});
-
-/* AMBIANCE */
-
-tl.set(p4,{
-
-autoAlpha:1,
-scale:isMobile ? 1.08 : 1.3
-
-},"-=.2")
-
-.to(p4,{
-
-scale:1,
-opacity:1,
-duration:1.1
-
-})
-
-.fromTo(".ambiance-grid",{
-
-opacity:0
-
-},{
-
-opacity:1,
-duration:.8
-
-},"-=.4")
-
-.to(p4,{
-
-scale:isMobile ? 1.2 : 2.3,
-opacity:0,
-autoAlpha:0,
-duration:1.5
-
-});
-
-/* CONTACT */
-
-tl.set(p5,{
-
-autoAlpha:1
-
-})
-
-.fromTo(".glass",{
-
-opacity:0,
-y:40
-
-},{
-
-opacity:1,
-y:0,
-stagger:.08,
-duration:1
-
-});
-
-/* =========================================================
-FORM
-========================================================= */
-
-const form = document.getElementById("contactForm");
-const toast = document.getElementById("toast");
-
-form.addEventListener("submit",(e)=>{
-
-e.preventDefault();
-
-const btn =
-form.querySelector(".submit-btn");
-
-btn.innerHTML = "Message Sent";
-
-navigator.vibrate?.(40);
-
-gsap.fromTo(btn,
-{scale:.95},
-{scale:1,duration:.3}
-);
-
-toast.classList.add("show");
-
-setTimeout(()=>{
-
-toast.classList.remove("show");
-
-},1400);
-
-setTimeout(()=>{
-
-form.submit();
-
-},500);
-
-});
-
 </script>
-
 </body>
 </html>

@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
 <title>Kaadapakshi — The Forest Quail</title>
 
-<!-- FONTS -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet" />
+<!-- GOOGLE FONTS -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
 
 <!-- GSAP -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -17,7 +20,7 @@
 <style>
 
 /* =========================================================
-   RESET
+RESET
 ========================================================= */
 
 *,
@@ -39,34 +42,35 @@ body{
 }
 
 /* =========================================================
-   ROOT
+ROOT
 ========================================================= */
 
 :root{
-  --gold:#D4A843;
-  --gold-soft:rgba(212,168,67,.25);
-  --gold-dim:rgba(212,168,67,.12);
 
-  --bg:#050504;
-  --bg-2:#090908;
-  --bg-3:#111009;
+  --gold:#D4A843;
+  --gold-dim:rgba(212,168,67,.18);
+  --gold-soft:rgba(212,168,67,.08);
+
+  --obsidian:#050504;
+  --obsidian-2:#0a0908;
+  --obsidian-3:#111009;
 
   --stone:#e8e0d4;
-  --stone-2:#b7aa98;
-  --stone-3:#72675d;
-  --stone-4:#40392f;
+  --stone-2:#b6a99a;
+  --stone-3:#776d63;
+  --stone-4:#322d28;
 
-  --display:'Cormorant Garamond',serif;
-  --body:'Jost',sans-serif;
+  --display:'Cormorant Garamond', serif;
+  --body:'Jost', sans-serif;
 }
 
 /* =========================================================
-   GLOBAL
+BASE
 ========================================================= */
 
 img{
-  max-width:100%;
   display:block;
+  max-width:100%;
 }
 
 a{
@@ -74,45 +78,40 @@ a{
   color:inherit;
 }
 
-button{
-  font-family:inherit;
-}
-
 body::-webkit-scrollbar{
   width:8px;
 }
 
 body::-webkit-scrollbar-thumb{
-  background:rgba(212,168,67,.25);
+  background:rgba(212,168,67,.2);
 }
 
 /* =========================================================
-   NOISE
+NOISE
 ========================================================= */
 
 #noise{
   position:fixed;
   inset:0;
+  z-index:2;
   pointer-events:none;
-  z-index:1;
   opacity:.03;
 
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
 
-  animation:noise 8s steps(10) infinite;
+  animation:noiseMove 8s steps(10) infinite;
 }
 
-@keyframes noise{
+@keyframes noiseMove{
   0%{transform:translate(0)}
-  20%{transform:translate(-2%,2%)}
-  40%{transform:translate(2%,-2%)}
-  60%{transform:translate(-1%,1%)}
-  80%{transform:translate(1%,-1%)}
+  25%{transform:translate(-2%,1%)}
+  50%{transform:translate(1%,-2%)}
+  75%{transform:translate(-1%,2%)}
   100%{transform:translate(0)}
 }
 
 /* =========================================================
-   CURSOR
+CURSOR
 ========================================================= */
 
 #cursor-dot,
@@ -128,14 +127,14 @@ body::-webkit-scrollbar-thumb{
   height:8px;
   border-radius:50%;
   background:var(--gold);
-  box-shadow:0 0 12px rgba(212,168,67,.8);
+  box-shadow:0 0 14px rgba(212,168,67,.7);
 }
 
 #cursor-ring{
   width:34px;
   height:34px;
   border-radius:50%;
-  border:1px solid rgba(212,168,67,.35);
+  border:1px solid rgba(212,168,67,.4);
 }
 
 @media(max-width:768px){
@@ -146,15 +145,68 @@ body::-webkit-scrollbar-thumb{
 }
 
 /* =========================================================
-   NAVBAR
+SCROLL ENGINE
+========================================================= */
+
+#scroll-track-rig{
+  position:relative;
+  width:100%;
+  height:700vh;
+  background:var(--obsidian);
+}
+
+#fixed-view-viewport{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+}
+
+/* =========================================================
+PANELS
+========================================================= */
+
+.deck-section{
+
+  position:absolute;
+  inset:0;
+
+  width:100%;
+  height:100vh;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0 1.5rem;
+
+  transform-origin:center center;
+
+  opacity:0;
+  visibility:hidden;
+
+  will-change:transform,opacity;
+
+  overflow:hidden;
+}
+
+.panel-inner{
+  width:100%;
+  max-width:1200px;
+  margin-inline:auto;
+}
+
+/* =========================================================
+NAVBAR
 ========================================================= */
 
 #nav{
+
   position:fixed;
   top:0;
   left:0;
   width:100%;
-  z-index:1000;
+
+  z-index:2000;
 
   height:72px;
 
@@ -164,10 +216,13 @@ body::-webkit-scrollbar-thumb{
 
   padding:0 2rem;
 
-  background:rgba(5,5,4,.72);
+  background:rgba(5,5,4,.68);
+
   backdrop-filter:blur(18px);
 
   border-bottom:1px solid rgba(212,168,67,.08);
+
+  opacity:0;
 }
 
 .nav-left{
@@ -192,11 +247,13 @@ body::-webkit-scrollbar-thumb{
 
 .logo-text{
   font-family:var(--display);
-  letter-spacing:.22em;
   font-size:.72rem;
+  letter-spacing:.24em;
   text-transform:uppercase;
-  color:rgba(212,168,67,.75);
+  color:rgba(212,168,67,.72);
 }
+
+/* DESKTOP NAV */
 
 .nav-links{
   display:flex;
@@ -205,12 +262,12 @@ body::-webkit-scrollbar-thumb{
 }
 
 .nav-link{
-  font-size:.7rem;
-  letter-spacing:.24em;
+  font-size:.68rem;
+  letter-spacing:.22em;
   text-transform:uppercase;
   color:var(--stone-3);
-  cursor:pointer;
   transition:.3s;
+  cursor:pointer;
 }
 
 .nav-link:hover{
@@ -218,24 +275,28 @@ body::-webkit-scrollbar-thumb{
 }
 
 /* =========================================================
-   MOBILE MENU
+MOBILE MENU
 ========================================================= */
 
 .mobile-btn{
   display:none;
+
   background:none;
   border:none;
+
   color:var(--gold);
+
   font-size:1.8rem;
-  cursor:pointer;
 }
 
 .mobile-menu{
+
   position:fixed;
   inset:0;
-  z-index:2000;
 
   background:rgba(5,5,4,.98);
+
+  z-index:5000;
 
   display:flex;
   flex-direction:column;
@@ -246,6 +307,7 @@ body::-webkit-scrollbar-thumb{
 
   opacity:0;
   pointer-events:none;
+
   transition:.4s;
 }
 
@@ -262,37 +324,62 @@ body::-webkit-scrollbar-thumb{
 
 .mobile-close{
   position:absolute;
-  top:30px;
-  right:30px;
+  top:25px;
+  right:25px;
 
-  font-size:2rem;
   background:none;
   border:none;
+
   color:var(--gold);
+
+  font-size:2rem;
 }
 
 /* =========================================================
-   SECTIONS
+INTRO PANEL
 ========================================================= */
 
-section{
-  position:relative;
-  min-height:100vh;
+#panel-curtain{
+  opacity:1;
+  visibility:visible;
+  z-index:100;
+}
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.curtain-logo-wrap{
+  width:clamp(160px,22vw,240px);
+}
 
-  padding:120px 2rem;
+.curtain-logo-wrap img{
+  width:100%;
+  height:auto;
+}
+
+.scroll-note{
+  position:absolute;
+  bottom:3rem;
+
+  text-transform:uppercase;
+  letter-spacing:.4em;
+  font-size:.65rem;
+
+  color:var(--stone-3);
 }
 
 /* =========================================================
-   HERO
+HERO
 ========================================================= */
 
-.hero{
-  overflow:hidden;
-  text-align:center;
+.hero-bg{
+  position:absolute;
+  inset:0;
+
+  background:
+  radial-gradient(
+    ellipse 80% 60% at 50% 65%,
+    rgba(180,120,20,.1) 0%,
+    transparent 70%
+  ),
+  var(--obsidian);
 }
 
 .hero-grid{
@@ -302,17 +389,21 @@ section{
   opacity:.04;
 
   background-image:
-    linear-gradient(rgba(212,168,67,.7) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(212,168,67,.7) 1px, transparent 1px);
+  linear-gradient(rgba(212,168,67,.8) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(212,168,67,.8) 1px, transparent 1px);
 
   background-size:80px 80px;
 }
 
 .hero-content{
   position:relative;
-  z-index:2;
+  z-index:5;
+
   width:100%;
-  max-width:1000px;
+  max-width:900px;
+
+  text-align:center;
+
   margin-inline:auto;
 }
 
@@ -322,29 +413,29 @@ section{
   justify-content:center;
   gap:1rem;
 
-  margin-bottom:1.8rem;
+  margin-bottom:1.5rem;
 
-  font-size:.68rem;
-  letter-spacing:.35em;
   text-transform:uppercase;
+  letter-spacing:.32em;
+  font-size:.68rem;
 
   color:rgba(212,168,67,.58);
 }
 
-.line{
+.hero-line{
   width:45px;
   height:1px;
-  background:rgba(212,168,67,.28);
+  background:rgba(212,168,67,.35);
 }
 
-.brand{
+.hero-brand{
   display:flex;
   justify-content:center;
-  margin-bottom:2rem;
+  margin-bottom:1.8rem;
 }
 
-.brand img{
-  width:min(520px,90%);
+.hero-brand img{
+  width:min(540px,92%);
 }
 
 .hero-sub{
@@ -359,22 +450,15 @@ section{
   color:rgba(212,168,67,.85);
 }
 
-.divider{
-  width:70px;
-  height:1px;
-  background:linear-gradient(to right, transparent, var(--gold), transparent);
-  margin:2.5rem auto 0;
-}
-
 /* =========================================================
-   STORY
+PHILOSOPHY
 ========================================================= */
 
-.story{
+#panel-philosophy{
   text-align:center;
 }
 
-.story-bg{
+.phil-bg{
   position:absolute;
   inset:0;
 
@@ -383,21 +467,20 @@ section{
   justify-content:center;
 
   font-family:var(--display);
-  font-size:18vw;
+  font-size:16vw;
   font-weight:700;
 
   color:transparent;
 
   -webkit-text-stroke:1px rgba(212,168,67,.03);
-
-  pointer-events:none;
 }
 
 .eyebrow{
-  font-size:.7rem;
-  letter-spacing:.38em;
   text-transform:uppercase;
+  letter-spacing:.35em;
+  font-size:.65rem;
   color:rgba(212,168,67,.55);
+
   margin-bottom:1.5rem;
 }
 
@@ -426,25 +509,23 @@ section{
 }
 
 .verse.gold{
-  color:rgba(212,168,67,.88);
+  color:rgba(212,168,67,.85);
 }
 
 .story-body{
-  margin-top:2.5rem;
-
   max-width:700px;
-
-  color:var(--stone-3);
+  margin:2.5rem auto 0;
 
   line-height:2;
+  color:var(--stone-3);
 }
 
 /* =========================================================
-   MENU
+MENU
 ========================================================= */
 
-.menu-section{
-  background:var(--bg-2);
+#panel-menu{
+  background:var(--obsidian-2);
 }
 
 .menu-wrap{
@@ -454,8 +535,8 @@ section{
 
 .tabs{
   display:flex;
-  flex-wrap:wrap;
   justify-content:center;
+  flex-wrap:wrap;
   gap:.8rem;
 
   margin:2rem 0 3rem;
@@ -465,23 +546,24 @@ section{
   padding:.6rem 1.4rem;
 
   border-radius:999px;
+
   border:1px solid var(--stone-4);
 
   background:none;
-
-  color:var(--stone-3);
 
   text-transform:uppercase;
   letter-spacing:.18em;
   font-size:.62rem;
 
-  cursor:pointer;
+  color:var(--stone-3);
 
   transition:.3s;
+
+  cursor:pointer;
 }
 
 .tab.active{
-  border-color:rgba(212,168,67,.5);
+  border-color:rgba(212,168,67,.45);
   background:rgba(212,168,67,.08);
   color:var(--gold);
 }
@@ -493,11 +575,13 @@ section{
 }
 
 .card{
-  background:var(--bg-3);
-  border:1px solid rgba(255,255,255,.04);
+  background:var(--obsidian-3);
 
   border-radius:18px;
+
   overflow:hidden;
+
+  border:1px solid rgba(255,255,255,.04);
 }
 
 .card-img{
@@ -509,10 +593,11 @@ section{
   width:100%;
   height:100%;
   object-fit:cover;
+
   transition:1s;
 }
 
-.card:hover .card-img img{
+.card:hover img{
   transform:scale(1.08);
 }
 
@@ -529,11 +614,10 @@ section{
 .card-desc{
   color:var(--stone-3);
   line-height:1.7;
-  font-size:.88rem;
 }
 
 /* =========================================================
-   AMBIANCE
+AMBIANCE
 ========================================================= */
 
 .ambiance-grid{
@@ -567,20 +651,19 @@ section{
   letter-spacing:.25em;
   font-size:.62rem;
   color:var(--stone-3);
-  margin-bottom:.5rem;
+  margin-bottom:.4rem;
 }
 
 .detail-value{
-  color:var(--stone);
   line-height:1.8;
 }
 
 /* =========================================================
-   CONTACT
+CONTACT
 ========================================================= */
 
-.contact{
-  background:var(--bg-2);
+#panel-contact{
+  background:var(--obsidian-2);
 }
 
 .contact-grid{
@@ -597,7 +680,7 @@ section{
 
   border:1px solid rgba(255,255,255,.05);
 
-  border-radius:22px;
+  border-radius:20px;
 
   padding:2rem;
 }
@@ -611,18 +694,19 @@ section{
 
   margin-bottom:.6rem;
 
-  font-size:.62rem;
-  letter-spacing:.28em;
   text-transform:uppercase;
+  letter-spacing:.25em;
+  font-size:.62rem;
 
   color:var(--stone-3);
 }
 
 .form-group input,
 .form-group textarea{
+
   width:100%;
 
-  background:#090908;
+  background:#0a0908;
 
   border:1px solid rgba(255,255,255,.05);
 
@@ -636,15 +720,16 @@ section{
 }
 
 .submit-btn{
+
   width:100%;
 
   padding:1rem;
 
   border-radius:14px;
 
-  border:1px solid rgba(212,168,67,.45);
+  border:1px solid rgba(212,168,67,.4);
 
-  background:rgba(212,168,67,.06);
+  background:rgba(212,168,67,.08);
 
   color:rgba(212,168,67,.9);
 
@@ -657,7 +742,7 @@ section{
 }
 
 .submit-btn:hover{
-  background:rgba(212,168,67,.14);
+  background:rgba(212,168,67,.15);
 }
 
 .social{
@@ -665,9 +750,9 @@ section{
 }
 
 .social-title{
-  font-size:.65rem;
-  letter-spacing:.3em;
   text-transform:uppercase;
+  letter-spacing:.3em;
+  font-size:.62rem;
 
   color:var(--stone-3);
 
@@ -680,27 +765,22 @@ section{
   gap:.8rem;
 
   padding:.7rem 0;
-
-  color:var(--stone-2);
 }
 
 .map{
-  height:250px;
-  border-radius:18px;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.05);
+  height:240px;
 
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-.map a{
-  border:1px solid rgba(212,168,67,.3);
-
+.map-link{
   padding:.8rem 1.4rem;
 
   border-radius:999px;
+
+  border:1px solid rgba(212,168,67,.28);
 
   text-transform:uppercase;
   letter-spacing:.2em;
@@ -710,10 +790,11 @@ section{
 }
 
 /* =========================================================
-   TOAST
+TOAST
 ========================================================= */
 
 .toast{
+
   position:fixed;
 
   bottom:30px;
@@ -725,18 +806,16 @@ section{
 
   border:1px solid rgba(212,168,67,.3);
 
-  color:var(--stone);
-
-  padding:1rem 1.5rem;
-
   border-radius:999px;
+
+  padding:1rem 1.4rem;
+
+  z-index:6000;
 
   opacity:0;
   pointer-events:none;
 
   transition:.4s;
-
-  z-index:3000;
 }
 
 .toast.show{
@@ -744,18 +823,10 @@ section{
 }
 
 /* =========================================================
-   MOBILE
+MOBILE
 ========================================================= */
 
 @media(max-width:900px){
-
-  .nav-links{
-    display:none;
-  }
-
-  .mobile-btn{
-    display:block;
-  }
 
   .ambiance-grid,
   .contact-grid{
@@ -765,22 +836,25 @@ section{
 
 @media(max-width:768px){
 
-  section{
-    padding:120px 1rem;
+  .nav-links{
+    display:none;
+  }
+
+  .mobile-btn{
+    display:block;
   }
 
   #nav{
     padding:0 1rem;
   }
 
+  .deck-section{
+    padding:0 1rem;
+  }
+
   .hero-eyebrow,
   .eyebrow{
     letter-spacing:.18em;
-  }
-
-  .hero-sub{
-    font-size:1rem;
-    line-height:1.6;
   }
 
   .menu-grid{
@@ -791,16 +865,18 @@ section{
     padding:1.2rem;
   }
 
-  .section-title{
-    font-size:2.6rem;
+  .hero-brand img{
+    width:92%;
   }
 
-  .story-body{
-    font-size:.95rem;
+  .hero-sub{
+    font-size:1rem;
+    line-height:1.6;
   }
 }
 
 </style>
+
 </head>
 
 <body>
@@ -811,353 +887,434 @@ section{
 <div id="cursor-ring"></div>
 
 <!-- =========================================================
-NAVBAR
-========================================================= -->
-
-<nav id="nav">
-
-  <div class="nav-left">
-    <div class="logo-ring">
-      <img src="assets/logo.png" alt="">
-    </div>
-
-    <div class="logo-text">
-      Kaadapakshi
-    </div>
-  </div>
-
-  <div class="nav-links">
-    <a class="nav-link" href="#hero">Home</a>
-    <a class="nav-link" href="#story">Story</a>
-    <a class="nav-link" href="#menu">Menu</a>
-    <a class="nav-link" href="#ambiance">Location</a>
-    <a class="nav-link" href="#contact">Query</a>
-  </div>
-
-  <button class="mobile-btn" id="openMenu">
-    ☰
-  </button>
-
-</nav>
-
-<!-- =========================================================
 MOBILE MENU
 ========================================================= -->
 
 <div class="mobile-menu" id="mobileMenu">
 
-  <button class="mobile-close" id="closeMenu">
-    ×
-  </button>
+<button class="mobile-close" id="closeMenu">
+×
+</button>
 
-  <a href="#hero">Home</a>
-  <a href="#story">Story</a>
-  <a href="#menu">Menu</a>
-  <a href="#ambiance">Location</a>
-  <a href="#contact">Query</a>
+<a href="#" onclick="scrollToPanel(1)">Home</a>
+<a href="#" onclick="scrollToPanel(2)">Story</a>
+<a href="#" onclick="scrollToPanel(3)">Menu</a>
+<a href="#" onclick="scrollToPanel(4)">Location</a>
+<a href="#" onclick="scrollToPanel(5)">Query</a>
 
 </div>
 
 <!-- =========================================================
-HERO
+SCROLL SYSTEM
 ========================================================= -->
 
-<section class="hero" id="hero">
+<div id="scroll-track-rig">
 
-  <div class="hero-grid"></div>
+<div id="fixed-view-viewport">
 
-  <div class="hero-content">
+<!-- =========================================================
+NAVBAR
+========================================================= -->
 
-    <div class="hero-eyebrow">
-      <div class="line"></div>
-      Est. Kanjirappally · Kerala
-      <div class="line"></div>
-    </div>
+<nav id="nav">
 
-    <div class="brand">
-      <img src="assets/kaadapakshi-lettering.png" alt="">
-    </div>
+<div class="nav-left">
 
-    <p class="hero-sub">
-      Manna was for survival. The Quail was a wish.<br>
-      <em>Experience the luxury of your deepest desires.</em>
-    </p>
+<div class="logo-ring">
+<img src="assets/logo.png">
+</div>
 
-    <div class="divider"></div>
+<div class="logo-text">
+Kaadapakshi
+</div>
 
-  </div>
+</div>
+
+<div class="nav-links">
+
+<a class="nav-link" onclick="scrollToPanel(1)">
+Home
+</a>
+
+<a class="nav-link" onclick="scrollToPanel(2)">
+Story
+</a>
+
+<a class="nav-link" onclick="scrollToPanel(3)">
+Menu
+</a>
+
+<a class="nav-link" onclick="scrollToPanel(4)">
+Location
+</a>
+
+<a class="nav-link" onclick="scrollToPanel(5)">
+Query
+</a>
+
+</div>
+
+<button class="mobile-btn" id="openMenu">
+☰
+</button>
+
+</nav>
+
+<!-- =========================================================
+PANEL 0
+========================================================= -->
+
+<section class="deck-section" id="panel-curtain">
+
+<div class="curtain-logo-wrap">
+<img src="assets/logo.png">
+</div>
+
+<div class="scroll-note">
+↓ Scroll / Swipe Down
+</div>
 
 </section>
 
 <!-- =========================================================
-STORY
+PANEL 1 HERO
 ========================================================= -->
 
-<section class="story" id="story">
+<section class="deck-section" id="panel-hero">
 
-  <div class="story-bg">
-    KAADA
-  </div>
+<div class="hero-bg"></div>
+<div class="hero-grid"></div>
 
-  <div>
+<div class="hero-content">
 
-    <div class="eyebrow">
-      Our Philosophy
-    </div>
+<div class="hero-eyebrow">
 
-    <h2 class="section-title">
-      The Legend of the <br>
-      <em>Forest Quail</em>
-    </h2>
+<div class="hero-line"></div>
 
-    <div class="verse-wrap">
+Est. Kanjirappally · Kerala
 
-      <p class="verse">
-        “In the wilderness, God sent Manna — the bare minimum for survival.”
-      </p>
+<div class="hero-line"></div>
 
-      <br>
+</div>
 
-      <p class="verse">
-        “But the people desired more. They craved the Quail.”
-      </p>
+<div class="hero-brand">
+<img src="assets/kaadapakshi-lettering.png">
+</div>
 
-      <br>
+<p class="hero-sub">
+Manna was for survival. The Quail was a wish.<br>
+<em>Experience the luxury of your deepest desires.</em>
+</p>
 
-      <p class="verse gold">
-        “The Quail was not sustenance. It was a wish. A luxury.”
-      </p>
-
-    </div>
-
-    <p class="story-body">
-      Born from the mist-covered hills of Kanjirappally,
-      Kaadapakshi honours Kerala’s most storied forest bird —
-      channeling its untamed essence into cuisine
-      that transcends the ordinary.
-    </p>
-
-  </div>
+</div>
 
 </section>
 
 <!-- =========================================================
-MENU
+PANEL 2 STORY
 ========================================================= -->
 
-<section class="menu-section" id="menu">
+<section class="deck-section" id="panel-philosophy">
 
-  <div class="menu-wrap">
+<div class="phil-bg">
+KAADA
+</div>
 
-    <div class="eyebrow" style="text-align:center;">
-      The Desires
-    </div>
+<div class="panel-inner">
 
-    <h2 class="section-title" style="text-align:center;">
-      The <em>Menu</em>
-    </h2>
+<div class="eyebrow">
+Our Philosophy
+</div>
 
-    <div class="tabs">
+<h2 class="section-title">
+The Legend of the <br>
+<em>Forest Quail</em>
+</h2>
 
-      <button class="tab active">
-        Signature
-      </button>
+<div class="verse-wrap">
 
-      <button class="tab">
-        Main Event
-      </button>
+<p class="verse">
+“In the wilderness, God sent Manna — the bare minimum for survival.”
+</p>
 
-      <button class="tab">
-        Cafe Staples
-      </button>
+<br>
 
-      <button class="tab">
-        Refreshments
-      </button>
+<p class="verse">
+“But the people desired more. They craved the Quail.”
+</p>
 
-    </div>
+<br>
 
-    <div class="menu-grid">
+<p class="verse gold">
+“The Quail was not sustenance. It was a wish. A luxury.”
+</p>
 
-      <div class="card">
-        <div class="card-img">
-          <img src="assets/kaada-varaval.png">
-        </div>
-        <div class="card-body">
-          <h3 class="card-title">Kaada Varaval</h3>
-          <p class="card-desc">
-            Crisp-fried quail in a masala of ancient Kerala spice lore.
-          </p>
-        </div>
-      </div>
+</div>
 
-      <div class="card">
-        <div class="card-img">
-          <img src="assets/kaada-vilayichathu.png">
-        </div>
-        <div class="card-body">
-          <h3 class="card-title">Kaada Vilayichathu</h3>
-          <p class="card-desc">
-            Slow-cooked quail braised in rich aromatic herbs.
-          </p>
-        </div>
-      </div>
+<p class="story-body">
 
-      <div class="card">
-        <div class="card-img">
-          <img src="assets/zinger-burger.png">
-        </div>
-        <div class="card-body">
-          <h3 class="card-title">Zinger Burger</h3>
-          <p class="card-desc">
-            Double-fried crispy chicken burger with house sauce.
-          </p>
-        </div>
-      </div>
+Born from the mist-covered hills of Kanjirappally,
+Kaadapakshi honours Kerala’s most storied forest bird —
+channeling its untamed essence into cuisine
+that transcends the ordinary.
 
-    </div>
+</p>
 
-  </div>
+</div>
 
 </section>
 
 <!-- =========================================================
-AMBIANCE
+PANEL 3 MENU
 ========================================================= -->
 
-<section id="ambiance">
+<section class="deck-section" id="panel-menu">
 
-  <div class="ambiance-grid">
+<div class="menu-wrap">
 
-    <div class="ambiance-img">
-      <img src="assets/cafe-ambiance.png">
-    </div>
+<div class="eyebrow" style="text-align:center;">
+The Desires
+</div>
 
-    <div>
+<h2 class="section-title" style="text-align:center;">
+The <em>Menu</em>
+</h2>
 
-      <div class="eyebrow">
-        Find Us
-      </div>
+<div class="tabs">
 
-      <h2 class="section-title">
-        Ambiance & <em>Details</em>
-      </h2>
+<button class="tab active">
+Signature
+</button>
 
-      <div class="detail">
-        <div class="detail-label">
-          Location
-        </div>
+<button class="tab">
+Main Event
+</button>
 
-        <div class="detail-value">
-          Parent Branch: Kalaketty <br>
-          Kanjirappally, Kottayam, Kerala
-        </div>
-      </div>
+<button class="tab">
+Cafe Staples
+</button>
 
-      <div class="detail">
-        <div class="detail-label">
-          Current Hours
-        </div>
+<button class="tab">
+Refreshments
+</button>
 
-        <div class="detail-value">
-          3:00 PM – 10:00 PM
-        </div>
-      </div>
+</div>
 
-    </div>
+<div class="menu-grid">
 
-  </div>
+<div class="card">
+
+<div class="card-img">
+<img src="assets/kaada-varaval.png">
+</div>
+
+<div class="card-body">
+<h3 class="card-title">Kaada Varaval</h3>
+<p class="card-desc">
+Crisp-fried quail in a masala of ancient Kerala spice lore.
+</p>
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-img">
+<img src="assets/kaada-vilayichathu.png">
+</div>
+
+<div class="card-body">
+<h3 class="card-title">Kaada Vilayichathu</h3>
+<p class="card-desc">
+Slow-cooked quail braised in rich aromatic herbs.
+</p>
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-img">
+<img src="assets/zinger-burger.png">
+</div>
+
+<div class="card-body">
+<h3 class="card-title">Zinger Burger</h3>
+<p class="card-desc">
+Double-fried crispy chicken burger with house sauce.
+</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 </section>
 
 <!-- =========================================================
-CONTACT
+PANEL 4 AMBIANCE
 ========================================================= -->
 
-<section class="contact" id="contact">
+<section class="deck-section" id="panel-ambiance">
 
-  <div class="contact-grid">
+<div class="ambiance-grid">
 
-    <div class="glass">
+<div class="ambiance-img">
+<img src="assets/cafe-ambiance.png">
+</div>
 
-      <div class="eyebrow">
-        Reach Out
-      </div>
+<div>
 
-      <h2 class="section-title" style="margin-bottom:2rem;">
-        Queries & <em>Conversations</em>
-      </h2>
+<div class="eyebrow">
+Find Us
+</div>
 
-      <form id="contactForm"
-            action="https://formspree.io/f/xaqkakwz"
-            method="POST">
+<h2 class="section-title">
+Ambiance & <em>Details</em>
+</h2>
 
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" required>
-        </div>
+<div class="detail">
 
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" required>
-        </div>
+<div class="detail-label">
+Location
+</div>
 
-        <div class="form-group">
-          <label>Message</label>
-          <textarea rows="5" required></textarea>
-        </div>
+<div class="detail-value">
+Parent Branch: Kalaketty <br>
+Kanjirappally, Kottayam, Kerala
+</div>
 
-        <button class="submit-btn" type="submit">
-          Send Message
-        </button>
+</div>
 
-      </form>
+<div class="detail">
 
-    </div>
+<div class="detail-label">
+Current Hours
+</div>
 
-    <div>
+<div class="detail-value">
+3:00 PM – 10:00 PM
+</div>
 
-      <div class="glass social">
+</div>
 
-        <div class="social-title">
-          Connect With Us
-        </div>
+</div>
 
-        <div class="social-row">
-          📸 @kaadapakshicafe
-        </div>
-
-        <div class="social-row">
-          💬 +91 9447416829
-        </div>
-
-      </div>
-
-      <div class="glass map">
-
-        <a href="https://maps.google.com"
-           target="_blank">
-          Open In Maps
-        </a>
-
-      </div>
-
-    </div>
-
-  </div>
+</div>
 
 </section>
+
+<!-- =========================================================
+PANEL 5 CONTACT
+========================================================= -->
+
+<section class="deck-section" id="panel-contact">
+
+<div class="contact-grid">
+
+<div class="glass">
+
+<div class="eyebrow">
+Reach Out
+</div>
+
+<h2 class="section-title" style="margin-bottom:2rem;">
+Queries & <em>Conversations</em>
+</h2>
+
+<form id="contactForm"
+action="https://formspree.io/f/xaqkakwz"
+method="POST">
+
+<div class="form-group">
+
+<label>
+Full Name
+</label>
+
+<input type="text" required>
+
+</div>
+
+<div class="form-group">
+
+<label>
+Email
+</label>
+
+<input type="email" required>
+
+</div>
+
+<div class="form-group">
+
+<label>
+Message
+</label>
+
+<textarea rows="5" required></textarea>
+
+</div>
+
+<button class="submit-btn" type="submit">
+Send Message
+</button>
+
+</form>
+
+</div>
+
+<div>
+
+<div class="glass social">
+
+<div class="social-title">
+Connect With Us
+</div>
+
+<div class="social-row">
+📸 @kaadapakshicafe
+</div>
+
+<div class="social-row">
+💬 +91 9447416829
+</div>
+
+</div>
+
+<div class="glass map">
+
+<a href="https://maps.google.com"
+target="_blank"
+class="map-link">
+
+Open In Maps
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+</div>
 
 <!-- =========================================================
 TOAST
 ========================================================= -->
 
 <div class="toast" id="toast">
-  Message Sent Successfully
+Message Sent Successfully
 </div>
 
 <!-- =========================================================
-SCRIPTS
+SCRIPT
 ========================================================= -->
 
 <script>
@@ -1176,22 +1333,25 @@ let ringX = 0;
 let ringY = 0;
 
 window.addEventListener("mousemove",(e)=>{
-  mouseX = e.clientX;
-  mouseY = e.clientY;
+
+mouseX = e.clientX;
+mouseY = e.clientY;
+
 });
 
 function animateCursor(){
 
-  dot.style.left = mouseX + "px";
-  dot.style.top = mouseY + "px";
+dot.style.left = mouseX + "px";
+dot.style.top = mouseY + "px";
 
-  ringX += (mouseX - ringX) * 0.12;
-  ringY += (mouseY - ringY) * 0.12;
+ringX += (mouseX - ringX) * 0.12;
+ringY += (mouseY - ringY) * 0.12;
 
-  ring.style.left = ringX + "px";
-  ring.style.top = ringY + "px";
+ring.style.left = ringX + "px";
+ring.style.top = ringY + "px";
 
-  requestAnimationFrame(animateCursor);
+requestAnimationFrame(animateCursor);
+
 }
 
 animateCursor();
@@ -1203,47 +1363,268 @@ MOBILE MENU
 const mobileMenu = document.getElementById("mobileMenu");
 
 document.getElementById("openMenu").onclick = ()=>{
-  mobileMenu.classList.add("active");
+
+mobileMenu.classList.add("active");
+
 };
 
 document.getElementById("closeMenu").onclick = ()=>{
-  mobileMenu.classList.remove("active");
+
+mobileMenu.classList.remove("active");
+
 };
 
 document.querySelectorAll(".mobile-menu a").forEach(link=>{
-  link.addEventListener("click",()=>{
-    mobileMenu.classList.remove("active");
-  });
+
+link.addEventListener("click",()=>{
+
+mobileMenu.classList.remove("active");
+
+});
+
 });
 
 /* =========================================================
-GSAP
+SCROLL TO PANEL
+========================================================= */
+
+function scrollToPanel(index){
+
+const totalHeight =
+document.getElementById("scroll-track-rig").clientHeight;
+
+const targetY =
+(totalHeight / 7) * index;
+
+window.scrollTo({
+top:targetY,
+behavior:"smooth"
+});
+
+}
+
+/* =========================================================
+GSAP ENGINE
 ========================================================= */
 
 gsap.registerPlugin(ScrollTrigger);
 
 const isMobile = window.innerWidth < 768;
 
-gsap.from(".hero-content",{
-  y:40,
-  opacity:0,
-  duration:1.3,
-  ease:"power3.out"
+const tl = gsap.timeline({
+
+scrollTrigger:{
+trigger:"#scroll-track-rig",
+start:"top top",
+end:"bottom bottom",
+scrub:1.2
+}
+
 });
 
-gsap.utils.toArray("section").forEach(section=>{
+const p0 = "#panel-curtain";
+const p1 = "#panel-hero";
+const p2 = "#panel-philosophy";
+const p3 = "#panel-menu";
+const p4 = "#panel-ambiance";
+const p5 = "#panel-contact";
 
-  gsap.from(section.querySelectorAll(".section-title, .eyebrow, .verse, .story-body, .card, .detail, .glass"),{
-    scrollTrigger:{
-      trigger:section,
-      start:"top 75%"
-    },
-    y:40,
-    opacity:0,
-    stagger:.08,
-    duration:1,
-    ease:"power2.out"
-  });
+/* INTRO */
+
+tl.set(p0,{
+autoAlpha:1
+})
+
+.to(".curtain-logo-wrap",{
+
+scale:isMobile ? 18 : 34,
+opacity:0,
+duration:1.4,
+ease:"power2.in"
+
+})
+
+.to(p0,{
+autoAlpha:0,
+duration:.1
+});
+
+/* HERO */
+
+tl.set(p1,{
+autoAlpha:1,
+scale:1
+})
+
+.fromTo(".hero-content",{
+
+opacity:0,
+scale:.92
+
+},{
+
+opacity:1,
+scale:1,
+duration:.8
+
+},"-=.2")
+
+.to("#nav",{
+
+opacity:1,
+duration:.5
+
+},"-=.5")
+
+.to(p1,{
+
+scale:isMobile ? 1.18 : 2.1,
+opacity:0,
+autoAlpha:0,
+duration:1.5,
+ease:"power1.inOut"
+
+});
+
+/* STORY */
+
+tl.set(p2,{
+
+autoAlpha:1,
+scale:.7
+
+},"-=.2")
+
+.to(p2,{
+
+scale:1,
+opacity:1,
+duration:1.1
+
+})
+
+.fromTo("#panel-philosophy .section-title, .verse, .story-body",{
+
+opacity:0,
+y:30
+
+},{
+
+opacity:1,
+y:0,
+stagger:.08,
+duration:1
+
+},"-=.8")
+
+.to(p2,{
+
+scale:isMobile ? 1.08 : 1.2,
+opacity:0,
+autoAlpha:0,
+duration:1.2
+
+});
+
+/* MENU */
+
+tl.set(p3,{
+
+autoAlpha:1,
+y:60,
+filter:"blur(10px)"
+
+},"-=.2")
+
+.to(p3,{
+
+y:0,
+filter:"blur(0px)",
+opacity:1,
+duration:1.1
+
+})
+
+.fromTo(".card",{
+
+opacity:0,
+y:30
+
+},{
+
+opacity:1,
+y:0,
+stagger:.06,
+duration:.8
+
+},"-=.6")
+
+.to(p3,{
+
+y:-50,
+filter:"blur(10px)",
+opacity:0,
+autoAlpha:0,
+duration:1.2
+
+});
+
+/* AMBIANCE */
+
+tl.set(p4,{
+
+autoAlpha:1,
+scale:isMobile ? 1.08 : 1.3
+
+},"-=.2")
+
+.to(p4,{
+
+scale:1,
+opacity:1,
+duration:1.1
+
+})
+
+.fromTo(".ambiance-grid",{
+
+opacity:0
+
+},{
+
+opacity:1,
+duration:.8
+
+},"-=.4")
+
+.to(p4,{
+
+scale:isMobile ? 1.2 : 2.3,
+opacity:0,
+autoAlpha:0,
+duration:1.5
+
+});
+
+/* CONTACT */
+
+tl.set(p5,{
+
+autoAlpha:1
+
+})
+
+.fromTo(".glass",{
+
+opacity:0,
+y:40
+
+},{
+
+opacity:1,
+y:0,
+stagger:.08,
+duration:1
 
 });
 
@@ -1256,28 +1637,33 @@ const toast = document.getElementById("toast");
 
 form.addEventListener("submit",(e)=>{
 
-  e.preventDefault();
+e.preventDefault();
 
-  const btn = form.querySelector(".submit-btn");
+const btn =
+form.querySelector(".submit-btn");
 
-  btn.innerHTML = "Message Sent";
+btn.innerHTML = "Message Sent";
 
-  gsap.fromTo(btn,
-    {scale:.96},
-    {scale:1,duration:.3}
-  );
+navigator.vibrate?.(40);
 
-  navigator.vibrate?.(40);
+gsap.fromTo(btn,
+{scale:.95},
+{scale:1,duration:.3}
+);
 
-  toast.classList.add("show");
+toast.classList.add("show");
 
-  setTimeout(()=>{
-    toast.classList.remove("show");
-  },1400);
+setTimeout(()=>{
 
-  setTimeout(()=>{
-    form.submit();
-  },400);
+toast.classList.remove("show");
+
+},1400);
+
+setTimeout(()=>{
+
+form.submit();
+
+},500);
 
 });
 
